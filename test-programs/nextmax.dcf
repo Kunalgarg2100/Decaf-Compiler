@@ -1,0 +1,50 @@
+class Program {
+	
+	int arr[110];
+
+	void main(){
+		int n;
+		n = 100;
+		initialize(n);
+		nextMax(n);
+	}
+
+	void initialize(int n){
+		for i=0, n-1 {
+			arr[i] = n - i;
+		}
+		for i=0, 10{
+			callout("printf","%d ",arr[i]);
+		}
+		callout("printf","\n");
+	}
+
+	void nextMax(int n){
+		int max1, max2;
+		if(n<2){
+			callout("printf","Invalid Input");
+		}
+		max1 = -1;
+		max2 = -1;
+		for i = 0, n-1 {
+			if(arr[i] > max1){
+				max2 = max1;
+				max1 = arr[i];
+			}
+			else{
+					if(arr[i] > max2){ 
+						if(arr[i] != max1){
+							max2 = arr[i];
+						}
+					}
+			}
+		}
+
+		if(max2 == -1) {
+			callout("printf","No second largest element");
+		}
+		else{
+			callout("printf","Second Largest element is %d",max2);
+		}
+	}
+}

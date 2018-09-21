@@ -1,0 +1,79 @@
+class Program {
+
+	int inp[110];
+
+	void main() {
+		int n;
+		n = 90;
+		initialize(n);
+		mergesort(0,n-1);
+		for i=0, 10{
+			callout("printf","%d ",inp[i]);
+		}
+		callout("printf","\n");
+	}
+
+	void initialize(int n){
+		int i;
+		for i=0, n-1 {
+			inp[i] = n - i;
+		}
+		for i=0, 10{
+			callout("printf","%d ",inp[i]);
+		}
+		callout("printf","\n");
+	}
+
+	void mergesort(int s, int e) {	
+    	int m;
+    	if(s >= e) {
+        	return;
+    	}
+    	else {
+    		m = (s+e) / 2;
+	    	mergesort(s, m);
+    		mergesort(m+1, e);
+    		merge(s,m,e);
+    		return;
+    	}
+	}
+
+	void merge(int l,int mid, int r){
+		int j,k;
+		int tmp[110];
+		j = mid + 1;
+		k = 0;
+		for i=l, mid {
+			if(inp[i] < inp[j]){
+				tmp[k] = inp[i];
+				k = k + 1;
+				i = i + 1;
+			}
+			else {
+				tmp[k] = inp[j];
+				j = j+1;
+				k = k + 1;
+				if(j == n){
+					break;
+				}
+			}
+			i = i -1;
+		}
+
+		for p=i, mid {
+			tmp[k] = inp[p];
+			k = k + 1;
+		}
+
+		for q=j, r {
+			tmp[k] = inp[q];
+			k = k + 1;
+		}
+
+		for p=l, r {
+			inp[p] = tmp[p];
+		}
+		return;
+	}
+	
+}
