@@ -40,15 +40,19 @@
      NOT = 293,
      NEQ = 294,
      AND = 295,
-     OR = 296
+     OR = 296,
+     SEMICOLON = 297,
+     COMMA = 298
     };
     int  yylval;
 %}
 digit [0-9]
 letter [a-zA-Z]
-alpha {letter}|[-]
+alpha {letter}|[_]
 alpha_num {alpha}|{digit}
 hex_digit {digit}|[a-fA-F]
+char (\\.|[^'\\\n])
+string (\\.|[^"])*
 %%
 "Program" { fprintf(stdout,"PROGRAM\n"); return PROGRAM; }
 "class" { fprintf(stdout,"CLASS\n"); return CLASS; }
@@ -63,8 +67,8 @@ hex_digit {digit}|[a-fA-F]
 "int"|"boolean" { fprintf(stdout,"DATA_TYPE:%s\n",yytext); return DATA_TYPE; }
 "true"|"false" { fprintf(stdout,"BOOL_LITERAL:%s\n",yytext); return BOOL_LITERAL; }
 {digit}+|"0x"{hex_digit}+ { fprintf(stdout,"INTEGER_LITERAL:%s\n",yytext); return INTEGER_LITERAL; }
-'(\\.|[^'\\\n])'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); return CHAR_LITERAL; }
-\"(\\.|[^"])*\"  { fprintf(stdout,"STRING:%s\n",yytext); return STRING; }
+'{char}'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); return CHAR_LITERAL; }
+\"{string}\"  { fprintf(stdout,"STRING:%s\n",yytext); return STRING; }
 {alpha}+{alpha_num}* { fprintf(stdout,"IDENTIFER:%s\n",yytext); return IDENTIFER; }
 [(] { fprintf(stdout,"OB:%s\n",yytext); return OB; }
 [)] { fprintf(stdout,"CB:%s\n",yytext); return CB; }
@@ -89,6 +93,8 @@ hex_digit {digit}|[a-fA-F]
 [|][|] { fprintf(stdout,"OR:%s\n",yytext); return OR; }
 [\n]     { fprintf(stdout,"EOL%s",yytext); return EOL; }
 [ \t]  { /* ignore whitespace */ }
+[,] { fprintf(stdout,"COMMA:%s\n",yytext) ; return COMMA; }
+[;] { fprintf(stdout,"SEMICOLON:%s\n",yytext); return SEMICOLON; }
 .      { fprintf(stdout,"Mystery character %s\n", yytext); }
 %%
 main(int argc, char **argv)
