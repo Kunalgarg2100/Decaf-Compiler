@@ -35,14 +35,16 @@
      GTEQ = 288,
      CHAR_LITERAL = 289,
      STRING = 290,
-     IDENTIFER = 291,
-     PER = 292,
+     ID = 291,
+     MOD = 292,
      NOT = 293,
      NEQ = 294,
      AND = 295,
      OR = 296,
      SEMICOLON = 297,
-     COMMA = 298
+     COMMA = 298,
+     PLUSEQ = 299,
+     MINUSEQ = 300
     };
     int  yylval;
 %}
@@ -69,7 +71,7 @@ string (\\.|[^"])*
 {digit}+|"0x"{hex_digit}+ { fprintf(stdout,"INTEGER_LITERAL:%s\n",yytext); return INTEGER_LITERAL; }
 '{char}'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); return CHAR_LITERAL; }
 \"{string}\"  { fprintf(stdout,"STRING:%s\n",yytext); return STRING; }
-{alpha}+{alpha_num}* { fprintf(stdout,"IDENTIFER:%s\n",yytext); return IDENTIFER; }
+{alpha}+{alpha_num}* { fprintf(stdout,"IDENTIFER:%s\n",yytext); return ID; }
 [(] { fprintf(stdout,"OB:%s\n",yytext); return OB; }
 [)] { fprintf(stdout,"CB:%s\n",yytext); return CB; }
 [{] { fprintf(stdout,"COB:%s\n",yytext); return COB; }
@@ -80,15 +82,17 @@ string (\\.|[^"])*
 [-] { fprintf(stdout,"SUB:%s\n",yytext); return SUB; }
 [*] { fprintf(stdout,"MUL:%s\n",yytext); return MUL; }
 [/] { fprintf(stdout,"DIV:%s\n",yytext); return DIV; }
-[%] { fprintf(stdout,"PER:%s\n",yytext); return PER; }
+[%] { fprintf(stdout,"MOD:%s\n",yytext); return MOD; }
 [<] { fprintf(stdout,"LT:%s\n",yytext); return LT; }
 [>] { fprintf(stdout,"GT:%s\n",yytext); return GT; }
 [!] { fprintf(stdout,"NOT:%s\n",yytext); return NOT; }
+[=] { fprintf(stdout,"EQ:%s\n",yytext); return EQ; }
 [<][=] { fprintf(stdout,"LTEQ:%s\n",yytext); return LTEQ; }
 [>][=] { fprintf(stdout,"GTEQ:%s\n",yytext); return GTEQ; }
-[=] { fprintf(stdout,"EQ:%s\n",yytext); return EQ; }
 [=][=] { fprintf(stdout,"EQEQ:%s\n",yytext); return EQEQ; }
 [!][=] { fprintf(stdout,"NEQ:%s\n",yytext); return NEQ; }
+[+][=] { fprintf(stdout,"PLUSEQ:%s\n",yytext); return PLUSEQ; }
+[-][=] { fprintf(stdout,"MINUSEQ:%s\n",yytext); return MINUSEQ; }
 [&][&] { fprintf(stdout,"AND:%s\n",yytext); return AND; }
 [|][|] { fprintf(stdout,"OR:%s\n",yytext); return OR; }
 [\n]     { fprintf(stdout,"EOL%s",yytext); return EOL; }
