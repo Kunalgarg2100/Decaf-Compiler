@@ -101,7 +101,7 @@ string (\\.|[^"])*
 [;] { fprintf(stdout,"SEMICOLON:%s\n",yytext); return SEMICOLON; }
 .      { fprintf(stdout,"Mystery character %s\n", yytext); }
 %%
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   int tok;
   while(tok = yylex()) {

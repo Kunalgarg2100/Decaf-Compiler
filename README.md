@@ -4,4 +4,3 @@ To run code :
 flex flex.l
 cc lex.yy.c -lfl
 bison -d parser.y
-
