@@ -1,6 +1,7 @@
 class Program {
 
 	int inp[110];
+	int tmp[110];
 
 	void main() {
 		int n;
@@ -40,7 +41,6 @@ class Program {
 
 	void merge(int l,int mid, int r){
 		int j,k;
-		int tmp[110];
 		j = mid + 1;
 		k = 0;
 		for i=l, mid {
