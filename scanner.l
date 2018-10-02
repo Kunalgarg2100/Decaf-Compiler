@@ -1,55 +1,6 @@
 /* recognize tokens for the Program and print them out */
 %{
-    #include<stdio.h>
-    #include<stdlib.h>
-    enum yytokentype{
-    	PROGRAM = 258,
-    	CLASS = 259,
-    	CALLOUT = 260,
-        BREAK = 261,
-        IF = 262,
-        ELSE = 263,
-        FOR = 264,
-        RETURN = 265,
-        VOID = 266,
-        CONTINUE = 267,
-        DATA_TYPE = 268,
-        BOOL_LITERAL = 269,
-        CHAR_LITERAL = 270,
-        INTEGER_LITERAL = 271,
-        STRING = 272,
-        ID = 273,
-        OB = 274,
-        CB = 275,
-        COB = 276,
-        CCB = 277,
-        SOB = 278,
-        SCB = 279,
-        ADD = 280,
-        SUB = 281,
-        MUL = 282,
-        DIV = 283,
-        MOD = 284,
-        NOT = 285,
-        LT = 286,
-        GT = 287,
-        LTEQ = 288,
-        GTEQ = 289,
-        EQ = 290,
-        EQEQ = 291,
-        NEQ = 292,
-        PLUSEQ = 293,
-        MINUSEQ = 294,
-        AND = 295,
-        OR = 296,
-        SEMICOLON = 297,
-        COMMA = 298
-    };
-    struct YYLVAL{
-        int val;
-        char * str;
-    };
-    struct YYLVAL yylval;
+    #include "parser.tab.h"
 %}
 digit [0-9]
 letter [a-zA-Z]
@@ -103,11 +54,3 @@ string (\\.|[^"])*
 [;] { fprintf(stdout,"SEMICOLON:%s\n",yytext); return SEMICOLON; }
 .   { fprintf(stdout,"Mystery character %s\n", yytext); }
 %%
-int main(int argc, char **argv)
-{
-  int tok;
-  while(tok = yylex()) {
-
-  }
-  printf("Scanner has assigned the tokens");
-}
