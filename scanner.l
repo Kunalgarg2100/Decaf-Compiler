@@ -1,49 +1,49 @@
-/* recognize tokens for the calculator and print them out */
+/* recognize tokens for the Program and print them out */
 %{
     #include<stdio.h>
     #include<stdlib.h>
-   enum yytokentype {
-     INTEGER_LITERAL = 258,
-     ADD = 259,
-     SUB = 260,
-     MUL = 261,
-     DIV = 262,
-     OB = 264,
-     CB = 265,
-     COB = 266,
-     CCB = 267,
-     SOB = 268,
-     SCB = 269,
-     MINUSEQ = 270,
-     PROGRAM = 271,
-     CLASS = 272,
-     CALLOUT = 273,
-     BREAK = 274,
-     IF = 275,
-     ELSE = 276,
-     DATA_TYPE = 277,
-     CONTINUE = 278,
-     RETURN = 279,
-     BOOL_LITERAL = 280,
-     FOR = 281,
-     VOID = 282,
-     EQ = 283,
-     EQEQ = 284,
-     LT = 285,
-     LTEQ = 286,
-     GT = 287,
-     GTEQ = 288,
-     CHAR_LITERAL = 289,
-     STRING = 290,
-     ID = 291,
-     MOD = 292,
-     NOT = 293,
-     NEQ = 294,
-     AND = 295,
-     OR = 296,
-     SEMICOLON = 297,
-     COMMA = 298,
-     PLUSEQ = 299
+    enum yytokentype{
+    	PROGRAM = 258,
+    	CLASS = 259,
+    	CALLOUT = 260,
+        BREAK = 261,
+        IF = 262,
+        ELSE = 263,
+        FOR = 264,
+        RETURN = 265,
+        VOID = 266,
+        CONTINUE = 267,
+        DATA_TYPE = 268,
+        BOOL_LITERAL = 269,
+        CHAR_LITERAL = 270,
+        INTEGER_LITERAL = 271,
+        STRING = 272,
+        ID = 273,
+        OB = 274,
+        CB = 275,
+        COB = 276,
+        CCB = 277,
+        SOB = 278,
+        SCB = 279,
+        ADD = 280,
+        SUB = 281,
+        MUL = 282,
+        DIV = 283,
+        MOD = 284,
+        NOT = 285,
+        LT = 286,
+        GT = 287,
+        LTEQ = 288,
+        GTEQ = 289,
+        EQ = 290,
+        EQEQ = 291,
+        NEQ = 292,
+        PLUSEQ = 293,
+        MINUSEQ = 294,
+        AND = 295,
+        OR = 296,
+        SEMICOLON = 297,
+        COMMA = 298
     };
     struct YYLVAL{
         int val;
@@ -101,14 +101,13 @@ string (\\.|[^"])*
 [ \t]+  { /* ignore whitespace */ }
 [,] { fprintf(stdout,"COMMA:%s\n",yytext) ; return COMMA; }
 [;] { fprintf(stdout,"SEMICOLON:%s\n",yytext); return SEMICOLON; }
-.      { fprintf(stdout,"Mystery character %s\n", yytext); }
+.   { fprintf(stdout,"Mystery character %s\n", yytext); }
 %%
 int main(int argc, char **argv)
 {
   int tok;
   while(tok = yylex()) {
-    // printf("%d", tok);
-    // if(tok == INTEGER_LITERAL) printf(" = %d\n", yylval);
-    // else printf("\n");
+
   }
+  printf("Scanner has assigned the tokens");
 }
