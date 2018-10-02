@@ -3,17 +3,21 @@
 int yylex(void);
 void yyerror (char const *);
 %}
-
+%union{
+	int val;
+	char * str;
+}
 /* declare tokens */
 %define parse.error verbose
 %token PROGRAM
 %token CLASS CALLOUT BREAK IF ELSE FOR RETURN VOID CONTINUE
-%token DATA_TYPE BOOL_LITERAL INTEGER_LITERAL CHAR_LITERAL
-%token STRING ID
+%token<str> DATA_TYPE BOOL_LITERAL CHAR_LITERAL
+%token<val> INTEGER_LITERAL
+%token<str> STRING ID
 %token OB CB COB CCB SOB SCB
 %token ADD SUB MUL DIV MOD NOT
 %token LT GT LTEQ GTEQ EQ EQEQ NEQ PLUSEQ MINUSEQ
-%token AND OR EOL
+%token AND OR
 %token SEMICOLON COMMA
 
 // increasing order of precedence http://www.difranco.net/compsci/C_Operator_Precedence_Table.htm
@@ -23,7 +27,7 @@ void yyerror (char const *);
 %left LT GT LTEQ GTEQ
 %left ADD SUB
 %left MUL DIV MOD
-
+%precedence NOT UMINUS
 
 %%
 /*calclist:                        
@@ -55,7 +59,7 @@ arg_list : DATA_TYPE ID
 	 | arg_list COMMA DATA_TYPE ID
 	 | %empty
 	 ;
-block : OB var_decl_list statement_list CB
+block : COB var_decl_list statement_list CCB
       ;
 var_decl_list : var_decl SEMICOLON var_decl_list
 	      | %empty
@@ -101,16 +105,18 @@ callout_args_list : COMMA callout_args
 callout_args : callout_arg
 	     | callout_args COMMA callout_arg
 	     ;
-//callout_arg : expr | INTEGER_LITERAL as expr already includes INTEGER_LITERAL
-callout_arg : expr
+callout_arg : expr | STRING
 	    ;
-expr : ID SOB expr SCB //location
+expr : location
      | method_call
      | literal
      | arith_expr
      | rel_expr
      | eq_expr
      | cond_expr
+     | SUB expr %prec UMINUS
+     | NOT expr %prec NOT
+     | OB expr CB
      ;
 arith_expr : expr ADD expr
 	   | expr SUB expr 
@@ -137,6 +143,7 @@ literal : INTEGER_LITERAL
 int main(int argc, char **argv)
 {
   yyparse();
+  printf("\nParsing Completed\n");
   return 0;
 }
 
