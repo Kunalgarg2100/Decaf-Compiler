@@ -30,11 +30,8 @@ void yyerror (char const *);
 %precedence NOT UMINUS
 
 %%
-/*calclist:                        
-	| calclist expr EOL { printf("= %d\n", $2); } 
-;*/
 program : CLASS PROGRAM COB field_decl_list method_decl_list CCB
-	{ printf("Program started");}
+	{ printf("Program Parsed successfully");}
 ;
 //field_decl_list : field_decl field_decl_list (not working)
 field_decl_list : field_decl_list field_decl 
@@ -105,7 +102,8 @@ callout_args_list : COMMA callout_args
 callout_args : callout_arg
 	     | callout_args COMMA callout_arg
 	     ;
-callout_arg : expr | STRING
+callout_arg : expr 
+	    | STRING
 	    ;
 expr : location
      | method_call
