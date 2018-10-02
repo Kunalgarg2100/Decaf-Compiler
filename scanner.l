@@ -14,7 +14,7 @@
      CCB = 267,
      SOB = 268,
      SCB = 269,
-     EOL = 270,
+     MINUSEQ = 270,
      PROGRAM = 271,
      CLASS = 272,
      CALLOUT = 273,
@@ -43,10 +43,13 @@
      OR = 296,
      SEMICOLON = 297,
      COMMA = 298,
-     PLUSEQ = 299,
-     MINUSEQ = 300
+     PLUSEQ = 299
     };
-    int  yylval;
+    struct YYLVAL{
+        int val;
+        char * str;
+    };
+    struct YYLVAL yylval;
 %}
 digit [0-9]
 letter [a-zA-Z]
@@ -66,12 +69,12 @@ string (\\.|[^"])*
 "return" { fprintf(stdout,"RETURN\n"); return RETURN; }
 "void" { fprintf(stdout,"VOID\n"); return VOID; }
 "continue" { fprintf(stdout,"CONTINUE\n"); return CONTINUE; }
-"int"|"boolean" { fprintf(stdout,"DATA_TYPE:%s\n",yytext); return DATA_TYPE; }
-"true"|"false" { fprintf(stdout,"BOOL_LITERAL:%s\n",yytext); return BOOL_LITERAL; }
-{digit}+|"0x"{hex_digit}+ { fprintf(stdout,"INTEGER_LITERAL:%s\n",yytext); return INTEGER_LITERAL; }
-'{char}'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); return CHAR_LITERAL; }
-\"{string}\"  { fprintf(stdout,"STRING:%s\n",yytext); return STRING; }
-{alpha}+{alpha_num}* { fprintf(stdout,"IDENTIFER:%s\n",yytext); return ID; }
+"int"|"boolean" { fprintf(stdout,"DATA_TYPE:%s\n",yytext); yylval.str = strdup(yytext); return DATA_TYPE; }
+"true"|"false" { fprintf(stdout,"BOOL_LITERAL:%s\n",yytext); yylval.str = strdup(yytext); return BOOL_LITERAL; }
+{digit}+|"0x"{hex_digit}+ { fprintf(stdout,"INTEGER_LITERAL:%s\n",yytext); yylval.val = atoi(yytext); return INTEGER_LITERAL; }
+'{char}'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); yylval.str = strdup(yytext); return CHAR_LITERAL; }
+\"{string}\"  { fprintf(stdout,"STRING:%s\n",yytext); yylval.str = strdup(yytext); return STRING; }
+{alpha}+{alpha_num}* { fprintf(stdout,"IDENTIFER:%s\n",yytext);yylval.str = strdup(yytext); return ID; }
 [(] { fprintf(stdout,"OB:%s\n",yytext); return OB; }
 [)] { fprintf(stdout,"CB:%s\n",yytext); return CB; }
 [{] { fprintf(stdout,"COB:%s\n",yytext); return COB; }
@@ -95,8 +98,7 @@ string (\\.|[^"])*
 [-][=] { fprintf(stdout,"MINUSEQ:%s\n",yytext); return MINUSEQ; }
 [&][&] { fprintf(stdout,"AND:%s\n",yytext); return AND; }
 [|][|] { fprintf(stdout,"OR:%s\n",yytext); return OR; }
-[\n]     { fprintf(stdout,"EOL%s",yytext); return EOL; }
-[ \t]  { /* ignore whitespace */ }
+[ \t]+  { /* ignore whitespace */ }
 [,] { fprintf(stdout,"COMMA:%s\n",yytext) ; return COMMA; }
 [;] { fprintf(stdout,"SEMICOLON:%s\n",yytext); return SEMICOLON; }
 .      { fprintf(stdout,"Mystery character %s\n", yytext); }
