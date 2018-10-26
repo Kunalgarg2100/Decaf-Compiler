@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "ast.h"
 using namespace std;
 int yylex(void);
 void yyerror (char const *);
@@ -7,9 +8,21 @@ void yyerror (char const *);
 %union{
 	int val;
 	char * str;
+	class BinaryExprASTnode * astnode;
+	class LitExprASTnode * literal;
+	class IdASTnode * id_list;
+	class VarlistASTnode * var_names;
+	class FieldDeclASTnode * field_decl;
+	class FieldDecllistASTnode * field_decl_list;
 }
 /* declare tokens */
 %define parse.error verbose
+%type <astnode> expr
+%type <literal> literal
+%type <id_list> id_list
+%type <var_names> var_names
+%type <field_decl> field_decl
+%type <field_decl_list> field_decl_list
 %token PROGRAM
 %token CLASS CALLOUT BREAK IF ELSE FOR RETURN VOID CONTINUE
 %token<str> DATA_TYPE BOOL_LITERAL CHAR_LITERAL
@@ -35,16 +48,16 @@ program : CLASS PROGRAM COB field_decl_list method_decl_list CCB
 	{ printf("Program Parsed successfully");}
 ;
 //field_decl_list : field_decl field_decl_list (not working)
-field_decl_list : field_decl_list field_decl 
-		| %empty
+field_decl_list : field_decl_list field_decl { $$->push_fielddecl($2); }
+		| %empty { $$ = new FieldDecllistASTnode(); }
 		;
-field_decl : DATA_TYPE var_names SEMICOLON
+field_decl : DATA_TYPE var_names SEMICOLON { $$ = new FieldDeclASTnode(string($1), $2); }
 	   ;
-var_names : id_list
-	  | var_names COMMA id_list
+var_names : id_list { $$ = new VarlistASTnode(); $$->push_varname($1); }
+	  | var_names COMMA id_list { $$->push_varname($3); }
 	  ;
-id_list : ID
-	| ID SOB INTEGER_LITERAL SCB
+id_list : ID { $$ = new IdASTnode(string($1)); }
+	| ID SOB INTEGER_LITERAL SCB { $$ = new IdASTnode(string($1), $3); }
 	;
 //method_decl_list : method_decl_list method_decl (not working)
 method_decl_list : method_decl method_decl_list
@@ -106,6 +119,7 @@ callout_args : callout_arg
 callout_arg : expr 
 	    | STRING
 	    ;
+//expr : expr ADD expr   { $$ = new BinaryExprASTnode($1, $3, "+"); }
 expr : location
      | method_call
      | literal
@@ -118,11 +132,11 @@ expr : location
      | OB expr CB
      ;
 arith_expr : expr ADD expr
-	   | expr SUB expr 
-	   | expr MOD expr
-	   | expr MUL expr
-	   | expr DIV expr 
-	   ;
+           | expr SUB expr
+           | expr MOD expr
+           | expr MUL expr
+           | expr DIV expr 
+           ;
 rel_expr : expr LT expr
 	 | expr GT expr
 	 | expr LTEQ expr
@@ -134,9 +148,9 @@ eq_expr : expr EQEQ expr
 cond_expr : expr AND expr
 	  | expr OR expr
 	  ;
-literal : INTEGER_LITERAL 
-	| CHAR_LITERAL 
-	| BOOL_LITERAL
+literal : INTEGER_LITERAL { $$ = new IntLitExprASTnode($1); }
+	| CHAR_LITERAL { $$ = new CharLitExprASTnode($1); }
+	| BOOL_LITERAL { $$ = new BoolLitExprASTnode($1); }
 	;
 %%
 int main(int argc, char **argv)
