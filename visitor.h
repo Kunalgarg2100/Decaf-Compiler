@@ -43,9 +43,9 @@ public:
 	}
 
 	virtual void visit(IdASTnode& node){
+		fprintf(stdout,"IdASTnode\n");
 		int array_size = node.getSize();
 		string var_name = node.getId();
-
 		if(array_size == -1){
 			fprintf(stdout, "<id = %s >\n" ,var_name.c_str());
 		}
@@ -62,9 +62,8 @@ public:
 
 	virtual void visit(FieldDeclASTnode& node){
 		fprintf(stdout,"FieldDeclASTnode\n");
-		vector<class IdASTnode*> var_names = node.getVarList();
-		for(uint i=0; i<var_names.size();i++)
-			var_names[i]->accept(*this);
+		class VarlistASTnode * var_names = node.getVarList();
+		var_names->accept(*this);
 	}
 
 	virtual void visit(FieldDecllistASTnode& node){

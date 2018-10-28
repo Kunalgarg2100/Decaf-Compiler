@@ -208,16 +208,16 @@ public:
 class FieldDeclASTnode : public ASTnode {
 private:
 	string datatype;
-	vector<class IdASTnode*> var_names;
+	class VarlistASTnode* var_names;
 public:
 	FieldDeclASTnode(string _datatype, class VarlistASTnode* _var_names):
-	datatype(_datatype), var_names(_var_names->getVarList()) {}
+	datatype(_datatype), var_names(_var_names) {}
 
 	string getdataType() {
 		return datatype;
 	}
 
-	vector<class IdASTnode*> getVarList() {
+	class VarlistASTnode * getVarList() {
 		return var_names;
 	}
 
