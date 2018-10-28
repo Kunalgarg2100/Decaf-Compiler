@@ -1,0 +1,6 @@
+class Program {
+	
+		int sum,n;
+		int k[5];
+	
+}

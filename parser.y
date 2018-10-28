@@ -1,9 +1,10 @@
 %{
 #include <stdio.h>
-#include "ast.h"
+#include "visitor.h"
 using namespace std;
 int yylex(void);
 void yyerror (char const *);
+ProgramASTnode * rootnode;
 %}
 %union{
 	int val;
@@ -14,9 +15,11 @@ void yyerror (char const *);
 	class VarlistASTnode * var_names;
 	class FieldDeclASTnode * field_decl;
 	class FieldDecllistASTnode * field_decl_list;
+	class ProgramASTnode * program;
 }
 /* declare tokens */
 %define parse.error verbose
+%type<program>program
 %type <astnode> expr
 %type <literal> literal
 %type <id_list> id_list
@@ -44,8 +47,8 @@ void yyerror (char const *);
 %precedence NOT UMINUS
 
 %%
-program : CLASS PROGRAM COB field_decl_list method_decl_list CCB
-	{ printf("Program Parsed successfully");}
+program : CLASS PROGRAM COB field_decl_list method_decl_list CCB 
+	{ $$ = new ProgramASTnode($4); rootnode = $$; printf("Program Parsed successfully");}
 ;
 //field_decl_list : field_decl field_decl_list (not working)
 field_decl_list : field_decl_list field_decl { $$->push_fielddecl($2); }
@@ -149,7 +152,7 @@ cond_expr : expr AND expr
 	  | expr OR expr
 	  ;
 literal : INTEGER_LITERAL { $$ = new IntLitExprASTnode($1); }
-	| CHAR_LITERAL { $$ = new CharLitExprASTnode($1); }
+	| CHAR_LITERAL { $$ = new CharLitExprASTnode('a'); }
 	| BOOL_LITERAL { $$ = new BoolLitExprASTnode($1); }
 	;
 %%
@@ -157,6 +160,8 @@ int main(int argc, char **argv)
 {
   yyparse();
   printf("\nParsing Completed\n");
+  class visitor v;
+  rootnode->accept(v);
   return 0;
 }
 

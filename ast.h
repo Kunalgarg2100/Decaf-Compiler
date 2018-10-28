@@ -3,6 +3,9 @@
 #include <string>
 using namespace std;
 extern FILE *xml_output;
+
+class ASTnode;
+class ExprASTnode;
 class BinaryExprASTnode;
 class UnaryExprASTnode;
 class FieldDeclASTnode;
@@ -13,10 +16,12 @@ class CharLitExprASTnode;
 class IdASTnode;
 class VarlistASTnode;
 class FieldDecllistASTnode;
-class ASTvistor;
+class ProgramASTnode;
 
 class ASTvisitor{
 public:
+	virtual void visit(ASTnode& node) = 0;
+	virtual void visit(ExprASTnode& node) = 0;
 	virtual void visit(BinaryExprASTnode& node) = 0;
 	virtual void visit(UnaryExprASTnode& node) = 0;
 	virtual void visit(LitExprASTnode& node) = 0;
@@ -27,7 +32,7 @@ public:
 	virtual void visit(VarlistASTnode& node) = 0;
 	virtual void visit(FieldDeclASTnode& node) = 0;
 	virtual void visit(FieldDecllistASTnode& node) = 0;
-
+	virtual void visit(ProgramASTnode& node) = 0;
 };
 
 class ASTnode {
@@ -38,7 +43,8 @@ class ASTnode {
 		}
 };
 
-class ExprASTnode : public ExprASTnode{
+
+class ExprASTnode : public ASTnode{
 	public :
 		ExprASTnode(){
 		}
@@ -143,7 +149,7 @@ private:
 	char charlit;
 public:
 	CharLitExprASTnode(char _charlit):
-	charlit(_charlit){}
+	charlit(_charlit) {}
 
 	char getCharLit(){
 		return charlit;
@@ -157,7 +163,7 @@ public:
 class IdASTnode {
 private:
 	string var_name;
-	int array_size;
+	int array_size = -1;
 public:
 	IdASTnode(string _var_name):
 	var_name(_var_name){}
@@ -233,6 +239,27 @@ public:
 	} 	
 	
 	vector<class FieldDeclASTnode*> getFielddeclList() {
+		return field_decl_list;
+	}
+
+	int getCnt(){
+		return cnt;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class ProgramASTnode : public ASTnode
+{
+private:
+	class FieldDecllistASTnode* field_decl_list;
+public:
+	ProgramASTnode(class FieldDecllistASTnode* _field_dect_list):
+	field_decl_list(_field_dect_list){}
+
+	class FieldDecllistASTnode* getFielddeclList(){
 		return field_decl_list;
 	}
 
