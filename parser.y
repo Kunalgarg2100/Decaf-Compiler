@@ -13,19 +13,31 @@ ProgramASTnode * rootnode;
 	class LitExprASTnode * literal;
 	class IdASTnode * id_list;
 	class VarlistASTnode * var_names;
-	class FieldDeclASTnode * field_decl;
-	class FieldDecllistASTnode * field_decl_list;
+	class FielddeclASTnode * field_decl;
+	class FielddecllistASTnode * field_decl_list;
 	class ProgramASTnode * program;
+	class IdlistASTnode * var_list;
+	class VardeclASTnode * var_decl;
+	class VardecllistASTnode * var_decl_list;
+	class StatementASTnode * statement;
+	class StatementlistASTnode * statement_list;
+	class BlockstatementASTnode * block;
 }
 /* declare tokens */
 %define parse.error verbose
-%type<program>program
+%type <program> program
 %type <astnode> expr
 %type <literal> literal
 %type <id_list> id_list
 %type <var_names> var_names
 %type <field_decl> field_decl
 %type <field_decl_list> field_decl_list
+%type <var_list> var_list;
+%type <var_decl> var_decl;
+%type <var_decl_list> var_decl_list;
+%type <statement> statement;
+%type <statement_list> statement_list;
+%type <block> block;
 %token PROGRAM
 %token CLASS CALLOUT BREAK IF ELSE FOR RETURN VOID CONTINUE
 %token<str> DATA_TYPE BOOL_LITERAL CHAR_LITERAL
@@ -52,9 +64,9 @@ program : CLASS PROGRAM COB field_decl_list method_decl_list CCB
 ;
 //field_decl_list : field_decl field_decl_list (not working)
 field_decl_list : field_decl_list field_decl { $$->push_fielddecl($2); }
-		| %empty { $$ = new FieldDecllistASTnode(); }
+		| %empty { $$ = new FielddecllistASTnode(); }
 		;
-field_decl : DATA_TYPE var_names SEMICOLON { $$ = new FieldDeclASTnode(string($1), $2); }
+field_decl : DATA_TYPE var_names SEMICOLON { $$ = new FielddeclASTnode(string($1), $2); }
 	   ;
 var_names : id_list { $$ = new VarlistASTnode(); $$->push_varname($1); }
 	  | var_names COMMA id_list { $$->push_varname($3); }
@@ -75,27 +87,27 @@ arg_list : DATA_TYPE ID
 	 ;
 block : COB var_decl_list statement_list CCB
       ;
-var_decl_list : var_decl SEMICOLON var_decl_list
-	      | %empty
+var_decl_list : var_decl SEMICOLON var_decl_list { $$->push_vardecl($1); }
+	      | %empty { $$ = new VardecllistASTnode(); }
 	      ;
-var_decl : DATA_TYPE var_list
+var_decl : DATA_TYPE var_list {$$ = new VardeclASTnode(string($1), $2); }
 	 ;
-var_list : ID
-	 | var_list COMMA ID
+var_list : ID { $$ = new IdlistASTnode(); $$->push_id(new IdASTnode(string($1))); }
+	 | var_list COMMA ID { $$->push_id(new IdASTnode(string($3))); }
 	 ;
-statement_list : statement statement_list
-	       | %empty
+statement_list : statement statement_list { $$-> push_statement($1); }
+	       | %empty { $$ =  new StatementlistASTnode(); }
 	       ;
 statement : location assign_op expr SEMICOLON
 	  | method_call SEMICOLON
-	  | IF OB expr CB block
-	  | IF OB expr CB block ELSE block
-	  | FOR ID EQ expr COMMA expr block
-	  | RETURN SEMICOLON
-	  | RETURN expr SEMICOLON
-	  | BREAK SEMICOLON
-	  | CONTINUE SEMICOLON
-	  | block
+	  | IF OB expr CB block { $$ = new IfelseASTnode($5, $3, NULL); }
+	  | IF OB expr CB block ELSE block { $$ = new IfelseASTnode($5, $3, $7); }
+	  | FOR ID EQ expr COMMA expr block { $$ = new ForstatementASTnode(string($2), $4, $6, $7); }
+	  | RETURN SEMICOLON { $$ = new ReturnstatementASTnode(NULL); }
+	  | RETURN expr SEMICOLON { $$ = new ReturnstatementASTnode($2); }
+	  | BREAK SEMICOLON { $$ = new BreakstatementASTnode(); }
+	  | CONTINUE SEMICOLON { $$ = new ContinuestatementASTnode(); }
+	  | block { $$ = $1; }
 	  ;
 location : ID
 	 | ID SOB expr SCB

@@ -8,14 +8,25 @@ class ASTnode;
 class ExprASTnode;
 class BinaryExprASTnode;
 class UnaryExprASTnode;
-class FieldDeclASTnode;
 class LitExprASTnode;
 class IntLitExprASTnode;
 class BoolLitExprASTnode;
 class CharLitExprASTnode;
 class IdASTnode;
 class VarlistASTnode;
-class FieldDecllistASTnode;
+class FielddeclASTnode;
+class FielddecllistASTnode;
+class IdlistASTnode;
+class VardeclASTnode;
+class VardecllistASTnode;
+class StatementASTnode;
+class StatementlistASTnode;
+class BreakstatementASTnode;
+class ContinuestatementASTnode;
+class ReturnstatementASTnode;
+class BlockstatementASTnode;
+class ForstatementASTnode;
+class IfelseASTnode;
 class ProgramASTnode;
 
 class ASTvisitor{
@@ -30,8 +41,19 @@ public:
 	virtual void visit(CharLitExprASTnode& node) = 0;
 	virtual void visit(IdASTnode& node) = 0;
 	virtual void visit(VarlistASTnode& node) = 0;
-	virtual void visit(FieldDeclASTnode& node) = 0;
-	virtual void visit(FieldDecllistASTnode& node) = 0;
+	virtual void visit(FielddeclASTnode& node) = 0;
+	virtual void visit(FielddecllistASTnode& node) = 0;
+	virtual void visit(IdlistASTnode& node) = 0;
+	virtual void visit(VardeclASTnode &node) = 0;
+	virtual void visit(VardecllistASTnode &node) = 0;
+	virtual void visit(StatementASTnode &node) = 0;
+	virtual void visit(StatementlistASTnode &node) = 0;
+	virtual void visit(BreakstatementASTnode &node) = 0;
+	virtual void visit(ContinuestatementASTnode &node) = 0;
+	virtual void visit(ReturnstatementASTnode &node) = 0;
+	virtual void visit(BlockstatementASTnode &node) = 0;
+	virtual void visit(ForstatementASTnode &node) = 0;
+	virtual void visit(IfelseASTnode &node) = 0;
 	virtual void visit(ProgramASTnode& node) = 0;
 };
 
@@ -187,13 +209,11 @@ public:
 class VarlistASTnode : public ASTnode {
 private:
 	vector<class IdASTnode*> var_names;
-	int cnt = 0;
 public:
 	VarlistASTnode(){}
 
 	void push_varname(class IdASTnode* var_name){
 		var_names.push_back(var_name);
-		cnt++;
 	} 	
 	
 	vector<class IdASTnode*> getVarList() {
@@ -205,12 +225,12 @@ public:
 	}
 };
 
-class FieldDeclASTnode : public ASTnode {
+class FielddeclASTnode : public ASTnode {
 private:
 	string datatype;
 	class VarlistASTnode* var_names;
 public:
-	FieldDeclASTnode(string _datatype, class VarlistASTnode* _var_names):
+	FielddeclASTnode(string _datatype, class VarlistASTnode* _var_names):
 	datatype(_datatype), var_names(_var_names) {}
 
 	string getdataType() {
@@ -226,24 +246,218 @@ public:
 	}
 };
 
-class FieldDecllistASTnode {
+class FielddecllistASTnode {
 private:
-	vector<class FieldDeclASTnode*> field_decl_list;
-	int cnt = 0;
+	vector<class FielddeclASTnode*> field_decl_list;
 public:
-	FieldDecllistASTnode(){}
+	FielddecllistASTnode(){}
 
-	void push_fielddecl(class FieldDeclASTnode* field_decl){
+	void push_fielddecl(class FielddeclASTnode* field_decl){
 		field_decl_list.push_back(field_decl);
-		cnt++;
 	} 	
 	
-	vector<class FieldDeclASTnode*> getFielddeclList() {
+	vector<class FielddeclASTnode*> getFielddeclList() {
 		return field_decl_list;
 	}
 
-	int getCnt(){
-		return cnt;
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class IdlistASTnode {
+private:
+	string datatype;
+	vector<class IdASTnode*> var_list;
+public:
+	IdlistASTnode(){}
+
+	void push_id(class IdASTnode* id){
+		var_list.push_back(id);
+	}
+
+	vector<class IdASTnode*> getIdlist() {
+		return var_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class VardeclASTnode {
+private:
+	string datatype;
+	class IdlistASTnode * var_list;
+public:
+	VardeclASTnode(string _datatype, class IdlistASTnode * _var_list):
+	datatype(_datatype), var_list(_var_list) {}
+
+	string getdataType(){
+		return datatype;
+	}
+
+	class IdlistASTnode * getIdlist(){
+		return var_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class VardecllistASTnode {
+private:
+	vector<class VardeclASTnode *> var_decl_list;
+public:
+	VardecllistASTnode(){}
+
+	void push_vardecl(class VardeclASTnode* var_decl){
+		var_decl_list.push_back(var_decl);
+	} 	
+	
+	vector<class VardeclASTnode*> getVardeclList() {
+		return var_decl_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class StatementASTnode : public ASTnode{
+public:
+	StatementASTnode(){}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class StatementlistASTnode : public ASTnode{
+private:
+	vector<class StatementASTnode*> statements_list;
+public:
+	StatementlistASTnode(){}
+
+	void push_statement(class StatementASTnode* statement){
+		statements_list.push_back(statement);
+	}
+
+	vector<class StatementASTnode*> getStatementsList(){
+		return statements_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class BreakstatementASTnode : public StatementASTnode{
+public:
+	BreakstatementASTnode(){}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class ContinuestatementASTnode : public StatementASTnode{
+public:
+	ContinuestatementASTnode(){}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class ReturnstatementASTnode : public StatementASTnode{
+private:
+	class ExprASTnode * expr;
+public:
+	ReturnstatementASTnode(class ExprASTnode * _expr):
+	expr(_expr) {}
+
+	class ExprASTnode * getExpr(){
+		return expr;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class BlockstatementASTnode : public StatementASTnode{
+private:
+	class VardecllistASTnode * var_decl_list;
+	class StatementlistASTnode * statements_list;
+public:
+	BlockstatementASTnode(class VardecllistASTnode * _var_decl_list, class StatementlistASTnode * _statements_list):
+	var_decl_list(_var_decl_list), statements_list(_statements_list) {}
+
+	class VardecllistASTnode * getVardeclList(){
+		return var_decl_list;
+	}
+
+	class StatementlistASTnode * getStatementsList(){
+		return statements_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class ForstatementASTnode : public StatementASTnode{
+private:
+	string id;
+	class ExprASTnode * initial_cond;
+	class ExprASTnode * break_cond;
+	class BlockstatementASTnode * block;
+public:
+	ForstatementASTnode(string _id, class ExprASTnode * _initial_cond, class ExprASTnode * _break_cond, class BlockstatementASTnode * _block):
+	id(_id), initial_cond(_initial_cond), break_cond(_break_cond), block(_block) {}
+
+	class ExprASTnode * getInitialcond(){
+		return initial_cond;
+	}
+
+	class ExprASTnode * getBreakcond(){
+		return break_cond;
+	}
+
+	class BlockstatementASTnode * getBlockstatement(){
+		return block;
+	}
+
+	string getId(){
+		return id;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class IfelseASTnode : public StatementASTnode{
+private:
+	class BlockstatementASTnode * ifstatement;
+	class ExprASTnode * cond;
+	class BlockstatementASTnode * elsestatement;
+public:
+	IfelseASTnode(class BlockstatementASTnode * _ifstatement, class ExprASTnode * _cond , class BlockstatementASTnode * _elsestatement):
+	ifstatement(_ifstatement), cond(_cond), elsestatement(_elsestatement) {}
+
+	class BlockstatementASTnode * getIfstatement(){
+		return ifstatement;
+	}
+
+	class BlockstatementASTnode * getElsestatement(){
+		return elsestatement;
+	}
+
+	class ExprASTnode * getCond(){
+		return cond;
 	}
 
 	virtual void accept(ASTvisitor &v){
@@ -254,12 +468,12 @@ public:
 class ProgramASTnode : public ASTnode
 {
 private:
-	class FieldDecllistASTnode* field_decl_list;
+	class FielddecllistASTnode* field_decl_list;
 public:
-	ProgramASTnode(class FieldDecllistASTnode* _field_dect_list):
+	ProgramASTnode(class FielddecllistASTnode* _field_dect_list):
 	field_decl_list(_field_dect_list){}
 
-	class FieldDecllistASTnode* getFielddeclList(){
+	class FielddecllistASTnode* getFielddeclList(){
 		return field_decl_list;
 	}
 
