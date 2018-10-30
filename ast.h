@@ -27,6 +27,8 @@ class ReturnstatementASTnode;
 class BlockstatementASTnode;
 class ForstatementASTnode;
 class IfelseASTnode;
+class LocationASTnode;
+class AssignstatementASTnode;
 class ProgramASTnode;
 
 class ASTvisitor{
@@ -54,6 +56,8 @@ public:
 	virtual void visit(BlockstatementASTnode &node) = 0;
 	virtual void visit(ForstatementASTnode &node) = 0;
 	virtual void visit(IfelseASTnode &node) = 0;
+	virtual void visit(LocationASTnode &node) = 0;
+	virtual void visit(AssignstatementASTnode &node) = 0;
 	virtual void visit(ProgramASTnode& node) = 0;
 };
 
@@ -206,6 +210,27 @@ public:
 	}
 };
 
+class IdtypeASTnode {
+private:
+	string datatype;
+	string var_name;
+public:
+	IdtypeASTnode(string _datatype, string _var_name):
+	datatype(_datatype), var_name(_var_name){}
+
+	string getId(){
+		return var_name;
+	}
+
+	string getType(){
+		return datatype;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		// v.visit(*this);
+	}
+};
+
 class VarlistASTnode : public ASTnode {
 private:
 	vector<class IdASTnode*> var_names;
@@ -285,6 +310,25 @@ public:
 	}
 };
 
+class IdtypelistASTnode {
+private:
+	vector<class IdtypeASTnode*> var_list;
+public:
+	IdtypelistASTnode(){}
+
+	void push_idtype(class IdtypeASTnode* id){
+		var_list.push_back(id);
+	}
+
+	vector<class IdtypeASTnode*> getIdtypelist() {
+		return var_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		// v.visit(*this);
+	}
+};
+
 class VardeclASTnode {
 private:
 	string datatype;
@@ -306,6 +350,37 @@ public:
 	}
 };
 
+class MethoddeclASTnode {
+private:
+	string returntype;
+	string id;
+	class IdtypelistASTnode * var_list;
+	class BlockstatementASTnode * block;
+public:
+	MethoddeclASTnode(string _datatype, string _id, class IdtypelistASTnode * _var_list, class BlockstatementASTnode * _block):
+	returntype(_datatype), id(_id), var_list(_var_list), block(_block) {}
+
+	string getreturnType(){
+		return returntype;
+	}
+
+	class IdtypelistASTnode * getIdlist(){
+		return var_list;
+	}
+
+	string getId(){
+		return id;
+	}
+
+	class BlockstatementASTnode * getBlock(){
+		return block;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		// v.visit(*this);
+	}
+};
+
 class VardecllistASTnode {
 private:
 	vector<class VardeclASTnode *> var_decl_list;
@@ -322,6 +397,25 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+};
+
+class MethoddecllistASTnode {
+private:
+	vector<class MethoddeclASTnode *> method_decl_list;
+public:
+	MethoddecllistASTnode(){}
+
+	void push_methoddecl(class MethoddeclASTnode* method_decl){
+		method_decl_list.push_back(method_decl);
+	} 	
+	
+	vector<class MethoddeclASTnode*> getMethoddeclList() {
+		return method_decl_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		// v.visit(*this);
 	}
 };
 
@@ -465,13 +559,189 @@ public:
 	}
 };
 
+class LocationASTnode : public ExprASTnode{
+private:
+	string id;
+	class ExprASTnode * expr;
+public:
+	LocationASTnode(string _id, class ExprASTnode * _expr):
+	id(_id), expr(_expr) {}
+
+	string getId(){
+		return id;
+	}
+
+	class ExprASTnode *  getExpr(){
+		return expr;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class AssignstatementASTnode : public StatementASTnode{
+private:
+	class LocationASTnode * location;
+	string op;
+	class ExprASTnode * expr;
+public:
+	AssignstatementASTnode(class LocationASTnode * _location, string _op, class ExprASTnode * _expr):
+	location(_location), op(_op), expr(_expr) {}
+
+	class LocationASTnode * getLocation(){
+		return location;
+	}
+
+	string getOp(){
+		return op;
+	}
+
+	class ExprASTnode * getExpr(){
+		return expr;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class MethodASTnode :  public StatementASTnode, public ExprASTnode {
+public:
+	MethodASTnode(){}
+	
+};
+
+class MethodArgsASTNode : public ASTnode {
+private:
+	vector<class ExprASTnode *> arguments_list;
+public:
+	MethodArgsASTNode(){}
+
+	void push_argument(class ExprASTnode * expr){
+		arguments_list.push_back(expr);
+	}
+
+	vector<class ExprASTnode *> getArgumentsList(){
+		return arguments_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};	
+
+
+class DefinedMethodASTnode : public MethodASTnode{
+private:
+	string method_name;
+	class MethodArgsASTNode* arguments_list;
+public:
+	DefinedMethodASTnode(string _method_name, class MethodArgsASTNode* _arguments_list):
+	method_name(_method_name), arguments_list(_arguments_list) {}
+
+	string getMethodName(){
+		return method_name;
+	}
+	
+	class MethodArgsASTNode*  getArgsList(){
+		return arguments_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		// v.visit(*this);
+	}
+};
+
+class CalloutargASTnode : public ASTnode{
+public:
+	CalloutargASTnode(){}
+};
+
+class ExprargASTnode : public CalloutargASTnode{
+private:
+	class ExprASTnode * argument;
+public:
+	ExprargASTnode(class ExprASTnode* _expr):
+	argument(_expr) {};
+
+	class ExprASTnode * getArgument(){
+		return argument;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class StringargASTnode : public CalloutargASTnode{
+private:
+	string argument;
+public:
+	StringargASTnode(string _str):
+	argument(_str) {};
+
+	string getArgument(){
+		return argument;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+};
+
+class CalloutArgsASTnode : public ASTnode{
+private:
+	vector<class CalloutargASTnode *> arguments_list;
+public:
+	CalloutArgsASTnode(){}
+
+	void push_argument(class CalloutargASTnode  * argument){
+		arguments_list.push_back(argument);
+	}
+
+	vector<class CalloutargASTnode *> getArgumentsList(){
+		return arguments_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
+	
+};
+
+class CalloutMethodASTnode : public MethodASTnode{
+private:
+	string method_name;
+	class CalloutArgsASTnode* arguments_list;
+public:
+	CalloutMethodASTnode(string _method_name, class CalloutArgsASTnode* _arguments_list):
+	method_name(_method_name), arguments_list(_arguments_list) {}
+
+	string getMethodName(){
+		return method_name;
+	}
+	
+	class CalloutArgsASTnode*  getArgsList(){
+		return arguments_list;
+	}
+
+	virtual void accept(ASTvisitor &v){
+		// v.visit(*this);
+	}
+};
+
 class ProgramASTnode : public ASTnode
 {
 private:
 	class FielddecllistASTnode* field_decl_list;
+	class MethoddecllistASTnode* method_decl_list;
 public:
 	ProgramASTnode(class FielddecllistASTnode* _field_dect_list):
-	field_decl_list(_field_dect_list){}
+	field_decl_list(_field_dect_list) {}
+
+	ProgramASTnode(class FielddecllistASTnode* _field_dect_list, class MethoddecllistASTnode* _method_decl_list):
+	field_decl_list(_field_dect_list), method_decl_list(_method_decl_list) {}
 
 	class FielddecllistASTnode* getFielddeclList(){
 		return field_decl_list;

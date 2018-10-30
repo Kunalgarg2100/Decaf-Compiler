@@ -162,6 +162,27 @@ public:
 		}
 	}
 
+	virtual void visit(LocationASTnode &node){
+		fprintf(stdout,"LocationASTnode\n");
+		fprintf(stdout,"<varname = %s\n",node.getId().c_str());
+		class ExprASTnode * expr = node.getExpr();
+		if(expr == NULL){
+
+		}
+		else{
+			// expr->accept(*this)
+		}
+	}
+
+	virtual void visit(AssignstatementASTnode &node){
+		fprintf(stdout,"AssignstatementASTnode\n");
+		class LocationASTnode * location = node.getLocation();
+		location->accept(*this);
+		fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
+		class ExprASTnode * expr = node.getExpr();
+		// expr->accept(*this);
+	}
+
 	virtual void visit(ProgramASTnode& node){
 		fprintf(stdout,"ProgramASTnode\n");
 		class FielddecllistASTnode* field_decl_list = node.getFielddeclList();	
