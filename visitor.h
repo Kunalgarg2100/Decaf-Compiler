@@ -121,7 +121,7 @@ public:
 
 		}
 		else{
-			// expr->accept(*this)
+			expr->accept(*this);
 		}
 	}
 
@@ -138,10 +138,10 @@ public:
 		fprintf(stdout,"<varname = %s\n",node.getId().c_str());
 		class ExprASTnode * initial_cond = node.getInitialcond();
 		fprintf(stdout,"Initial condn\n");
-		// initial_cond->accept(*this);
+		initial_cond->accept(*this);
 		class ExprASTnode * break_cond = node.getBreakcond();
 		fprintf(stdout,"Break condn\n");
-		// break_cond->accept(*this);
+		break_cond->accept(*this);
 		class BlockstatementASTnode * block = node.getBlockstatement();
 		fprintf(stdout,"Block statement\n");
 		block->accept(*this);
@@ -151,7 +151,7 @@ public:
 		fprintf(stdout,"IfelseASTnode\n");
 		class ExprASTnode * cond = node.getCond();
 		fprintf(stdout,"Condition\n");
-		// cond->accept(*this);
+		cond->accept(*this);
 		class BlockstatementASTnode * ifstatement = node.getIfstatement();
 		fprintf(stdout,"If statement\n");
 		ifstatement->accept(*this);
@@ -170,7 +170,7 @@ public:
 
 		}
 		else{
-			// expr->accept(*this)
+			expr->accept(*this);
 		}
 	}
 
@@ -180,7 +180,7 @@ public:
 		location->accept(*this);
 		fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
 		class ExprASTnode * expr = node.getExpr();
-		// expr->accept(*this);
+		expr->accept(*this);
 	}
 
 	virtual void visit(ProgramASTnode& node){

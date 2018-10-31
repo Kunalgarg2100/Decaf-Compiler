@@ -12,7 +12,6 @@ ProgramASTnode * rootnode;
 	char * str;
 	char ch;
 
-	class BinaryExprASTnode * astnode;
 	class LitExprASTnode * literal;
 	class IdASTnode * id_list;
 	class VarlistASTnode * var_names;
@@ -33,12 +32,13 @@ ProgramASTnode * rootnode;
 	class IdtypelistASTnode * arg_list;
 	class MethoddeclASTnode * method_decl;
 	class MethoddecllistASTnode * method_decl_list;
+	class ExprASTnode * expr;
+	class BinaryExprASTnode * binaryexpr;
 
 }
 /* declare tokens */
 %define parse.error verbose
 %type <program> program
-%type <astnode> expr
 %type <literal> literal
 %type <id_list> id_list
 %type <var_names> var_names
@@ -60,6 +60,11 @@ ProgramASTnode * rootnode;
 %type <arg_list> arg_list;
 %type <method_decl> method_decl;
 %type <method_decl_list> method_decl_list;
+%type <expr> expr;
+%type <binaryexpr> arith_expr;
+%type <binaryexpr> rel_expr;
+%type <binaryexpr> eq_expr;
+%type <binaryexpr> cond_expr;
 %token PROGRAM
 %token CLASS CALLOUT BREAK IF ELSE FOR RETURN CONTINUE
 %token<str> DATA_TYPE BOOL_LITERAL VOID
@@ -67,9 +72,9 @@ ProgramASTnode * rootnode;
 %token<val> INTEGER_LITERAL
 %token<str> STRING ID
 %token OB CB COB CCB SOB SCB
-%token ADD SUB MUL DIV MOD NOT
+%token<str> ADD SUB MUL DIV MOD NOT
 %token<str> LT GT LTEQ GTEQ EQ EQEQ NEQ PLUSEQ MINUSEQ
-%token AND OR
+%token<str> AND OR
 %token SEMICOLON COMMA
 
 // increasing order of precedence http://www.difranco.net/compsci/C_Operator_Precedence_Table.htm
@@ -157,33 +162,33 @@ callout_arg : expr { $$ = new ExprargASTnode($1); }
 	    | STRING {$$ = new StringargASTnode(string($1)); }
 	    ;
 //expr : expr ADD expr   { $$ = new BinaryExprASTnode($1, $3, "+"); }
-expr : location
-     | method_call
-     | literal
-     | arith_expr
-     | rel_expr
-     | eq_expr
-     | cond_expr
-     | SUB expr %prec UMINUS
-     | NOT expr %prec NOT
-     | OB expr CB
+expr : location { $$ = $1;}
+     | method_call { $$ = $1;}
+     | literal { $$ = $1; }
+     | arith_expr { $$ = $1;}
+     | rel_expr { $$ = $1;}
+     | eq_expr { $$ = $1;}
+     | cond_expr { $$ = $1;}
+     | SUB expr %prec UMINUS { $$ = new UnaryExprASTnode($2, string($1)); }
+     | NOT expr %prec NOT { $$ = new UnaryExprASTnode($2, string($1)); }
+     | OB expr CB {$$ = $2;}
      ;
-arith_expr : expr ADD expr
-           | expr SUB expr
-           | expr MOD expr
-           | expr MUL expr
-           | expr DIV expr 
+arith_expr : expr ADD expr  { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+           | expr SUB expr  { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+           | expr MOD expr  { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+           | expr MUL expr  { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+           | expr DIV expr  { $$ = new BinaryExprASTnode($1, $3, string($2)); }
            ;
-rel_expr : expr LT expr
-	 | expr GT expr
-	 | expr LTEQ expr
-	 | expr GTEQ expr
+rel_expr : expr LT expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+	 | expr GT expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+	 | expr LTEQ expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+	 | expr GTEQ expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
 	 ;
-eq_expr : expr EQEQ expr
-	| expr NEQ expr
+eq_expr : expr EQEQ expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+	| expr NEQ expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
 	;
-cond_expr : expr AND expr
-	  | expr OR expr
+cond_expr : expr AND expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
+	  | expr OR expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
 	  ;
 literal : INTEGER_LITERAL { $$ = new IntLitExprASTnode($1); }
 	| CHAR_LITERAL { $$ = new CharLitExprASTnode($1); }

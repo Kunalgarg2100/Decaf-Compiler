@@ -72,10 +72,11 @@ class ASTnode {
 
 class ExprASTnode : public ASTnode{
 	public :
-		ExprASTnode(){
-		}
-		~ExprASTnode(){
-		}
+		ExprASTnode(){}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
 };
 
 class BinaryExprASTnode : public ExprASTnode
@@ -612,7 +613,7 @@ public:
 	
 };
 
-class MethodArgsASTNode : public ASTnode {
+class MethodArgsASTNode : public ExprASTnode {
 private:
 	vector<class ExprASTnode *> arguments_list;
 public:
