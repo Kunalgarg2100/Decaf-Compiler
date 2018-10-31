@@ -14,17 +14,24 @@ public:
 	}
 
 	virtual void visit(ExprASTnode& node){
-		
+		fprintf(stdout,"ExprASTnode\n");
 	}
 
 	virtual void visit(BinaryExprASTnode& node){
-		// node.getLeft()->accept(this*);
-		// node.getRight()->accept(this*);
-		// cout << node.getOp() << " ";
+		fprintf(stdout,"BinaryExprASTnode\n");
+		ExprASTnode * left = node.getLeft();
+		ExprASTnode * right = node.getRight();
+		string binop = node.getOp();
+		left->accept(*this);
+		right->accept(*this);
+		fprintf(stdout,"binop is %s\n",binop.c_str());
 	}
 	
 	virtual void visit(UnaryExprASTnode& node){
-
+		ExprASTnode * expr = node.getExpr();
+		expr->accept(*this);
+		string unary_operator = node.getOp();
+		fprintf(stdout,"unary_operator is %s\n",unary_operator.c_str());
 	}
 
 	virtual void visit(LitExprASTnode& node){
@@ -56,6 +63,8 @@ public:
 
 	virtual void visit(IdtypeASTnode& node){
 		fprintf(stdout,"IdtypeASTnode\n");
+		fprintf(stdout,"datatype = %s\n", node.getType().c_str());
+		fprintf(stdout,"var_name = %s\n", node.getId().c_str());
 	}
 
 	virtual void visit(VarlistASTnode& node){
@@ -86,7 +95,10 @@ public:
 	}
 
 	virtual void visit(IdtypelistASTnode& node){
-		fprintf(stdout,"IdltypelistASTnode\n");
+		fprintf(stdout,"IdtypelistASTnode\n");
+		vector<class IdtypeASTnode*> var_list = node.getIdtypelist();
+		for(uint i=0; i<var_list.size();i++)
+			var_list[i]->accept(*this);
 	}
 
 	virtual void visit(VardeclASTnode &node){
@@ -105,10 +117,19 @@ public:
 
 	virtual void visit(MethoddeclASTnode &node){
 		fprintf(stdout,"MethoddeclASTnode\n");
+		fprintf(stdout,"<returntype = %s\n",node.getreturnType().c_str());
+		fprintf(stdout,"<methodname = %s\n", node.getId().c_str());
+		class IdtypelistASTnode * var_list = node.getIdlist();
+		var_list->accept(*this);
+		class BlockstatementASTnode * block = node.getBlock();
+		block->accept(*this);
 	}
 
 	virtual void visit(MethoddecllistASTnode &node){
 		fprintf(stdout,"MethoddecllistASTnode\n");
+		vector<class MethoddeclASTnode *> method_decl_list = node.getMethoddeclList();
+		for(int i=0; i< sz(method_decl_list) ;i++)
+			method_decl_list[i]->accept(*this);
 	}
 
 	virtual void visit(StatementASTnode &node){
@@ -118,8 +139,10 @@ public:
 	virtual void visit(StatementlistASTnode &node){
 		fprintf(stdout,"StatementlistASTnode\n");
 		vector<class StatementASTnode*> statements_list = node.getStatementsList();
-		for(int i=0; i< sz(statements_list) ;i++)
+		for(int i=0; i< sz(statements_list) ;i++){
+			cout << i << " ";
 			statements_list[i]->accept(*this);
+		}
 	}
 
 	virtual void visit(BreakstatementASTnode &node){
@@ -192,11 +215,11 @@ public:
 
 	virtual void visit(AssignstatementASTnode &node){
 		fprintf(stdout,"AssignstatementASTnode\n");
-		// class LocationASTnode * location = node.getLocation();
-		// location->accept(*this);
-		// fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
-		// class ExprASTnode * expr = node.getExpr();
-		// expr->accept(*this);
+		class LocationASTnode * location = node.getLocation();
+		location->accept(*this);
+		fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
+		class ExprASTnode * expr = node.getExpr();
+		expr->accept(*this);
 	}
 
 
@@ -206,10 +229,18 @@ public:
 
 	virtual void visit(MethodArgsASTnode &node){
 		fprintf(stdout,"MethodArgsASTnode\n");
+		vector<class ExprASTnode *> arguments_list = node.getArgumentsList();
+		for(int i=0; i< sz(arguments_list) ;i++)
+			arguments_list[i]->accept(*this);
 	}
 
 	virtual void visit(DefinedMethodASTnode &node){
 		fprintf(stdout,"DefinedMethodASTnode\n");
+		string method_name = node.getMethodName();
+		cout << "derived"<< endl;
+		class MethodArgsASTnode* arguments_list = node.getArgsList();
+		fprintf(stdout,"defined method name = %s\n",method_name.c_str());
+		arguments_list->accept(*this);
 	}
 
 	virtual void visit(CalloutargASTnode &node){
@@ -218,22 +249,35 @@ public:
 
 	virtual void visit(ExprargASTnode &node){
 		fprintf(stdout,"ExprargASTnode\n");
+		class ExprASTnode * expr_argument = node.getArgument();
+		expr_argument->accept(*this);
 	}
 
 	virtual void visit(StringargASTnode &node){
 		fprintf(stdout,"StringargASTnode\n");
+		string argument =  node.getArgument();
+		fprintf(stdout,"<string arg = %s\n", argument.c_str());
 	}
 	virtual void visit(CalloutArgsASTnode &node){
 		fprintf(stdout,"CalloutArgsASTnode\n");
+		vector<class CalloutargASTnode *> arguments_list = node.getArgumentsList();
+		for(int i=0; i< sz(arguments_list) ;i++)
+			arguments_list[i]->accept(*this);
 	}
 
 	virtual void visit(CalloutMethodASTnode &node){
 		fprintf(stdout,"CalloutMethodASTnode\n");
+		fprintf(stdout,"<call out methodname = %s\n",node.getMethodName().c_str());
+		class CalloutArgsASTnode* arguments_list = node.getArgsList();
+		arguments_list->accept(*this);
 	}
 
 	virtual void visit(ProgramASTnode& node){
 		fprintf(stdout,"ProgramASTnode\n");
-		class FielddecllistASTnode* field_decl_list = node.getFielddeclList();	
+		class FielddecllistASTnode* field_decl_list = node.getFielddeclList();
+		class MethoddecllistASTnode* method_decl_list = node.getMethoddeclList();
 		field_decl_list->accept(*this);
+		if(method_decl_list != NULL)
+			method_decl_list->accept(*this);
 	}
 };

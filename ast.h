@@ -673,24 +673,28 @@ public:
 	}
 
 	virtual void accept(ASTvisitor &v){
-		// v.visit(*this);
+		v.visit(*this);
 	}
 };
 
 class CalloutargASTnode {
 public:
 	CalloutargASTnode(){}
+
+	virtual void accept(ASTvisitor &v){
+		v.visit(*this);
+	}
 };
 
 class ExprargASTnode : public CalloutargASTnode{
 private:
-	class ExprASTnode * argument;
+	class ExprASTnode * expr_argument;
 public:
 	ExprargASTnode(class ExprASTnode* _expr):
-	argument(_expr) {};
+	expr_argument(_expr) {};
 
 	class ExprASTnode * getArgument(){
-		return argument;
+		return expr_argument;
 	}
 
 	virtual void accept(ASTvisitor &v){
@@ -761,14 +765,16 @@ private:
 	class FielddecllistASTnode* field_decl_list;
 	class MethoddecllistASTnode* method_decl_list;
 public:
-	ProgramASTnode(class FielddecllistASTnode* _field_dect_list):
-	field_decl_list(_field_dect_list) {}
 
 	ProgramASTnode(class FielddecllistASTnode* _field_dect_list, class MethoddecllistASTnode* _method_decl_list):
 	field_decl_list(_field_dect_list), method_decl_list(_method_decl_list) {}
 
 	class FielddecllistASTnode* getFielddeclList(){
 		return field_decl_list;
+	}
+
+	class MethoddecllistASTnode* getMethoddeclList(){
+		return method_decl_list;
 	}
 
 	virtual void accept(ASTvisitor &v){
