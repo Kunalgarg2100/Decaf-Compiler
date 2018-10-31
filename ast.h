@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 using namespace std;
-extern FILE *xml_output;
 
 class ASTnode;
 class ExprASTnode;
@@ -13,12 +12,16 @@ class IntLitExprASTnode;
 class BoolLitExprASTnode;
 class CharLitExprASTnode;
 class IdASTnode;
+class IdtypeASTnode;
 class VarlistASTnode;
 class FielddeclASTnode;
 class FielddecllistASTnode;
 class IdlistASTnode;
+class IdtypelistASTnode;
 class VardeclASTnode;
+class MethoddeclASTnode;
 class VardecllistASTnode;
+class MethoddecllistASTnode;
 class StatementASTnode;
 class StatementlistASTnode;
 class BreakstatementASTnode;
@@ -29,6 +32,14 @@ class ForstatementASTnode;
 class IfelseASTnode;
 class LocationASTnode;
 class AssignstatementASTnode;
+class MethodASTnode;
+class MethodArgsASTnode;
+class DefinedMethodASTnode;
+class CalloutargASTnode;
+class ExprargASTnode;
+class StringargASTnode;
+class CalloutArgsASTnode;
+class CalloutMethodASTnode;
 class ProgramASTnode;
 
 class ASTvisitor{
@@ -42,12 +53,16 @@ public:
 	virtual void visit(BoolLitExprASTnode& node) = 0;
 	virtual void visit(CharLitExprASTnode& node) = 0;
 	virtual void visit(IdASTnode& node) = 0;
+	virtual void visit(IdtypeASTnode& node) = 0;
 	virtual void visit(VarlistASTnode& node) = 0;
 	virtual void visit(FielddeclASTnode& node) = 0;
 	virtual void visit(FielddecllistASTnode& node) = 0;
 	virtual void visit(IdlistASTnode& node) = 0;
+	virtual void visit(IdtypelistASTnode& node) = 0;
 	virtual void visit(VardeclASTnode &node) = 0;
+	virtual void visit(MethoddeclASTnode &node) = 0;
 	virtual void visit(VardecllistASTnode &node) = 0;
+	virtual void visit(MethoddecllistASTnode &node) = 0;
 	virtual void visit(StatementASTnode &node) = 0;
 	virtual void visit(StatementlistASTnode &node) = 0;
 	virtual void visit(BreakstatementASTnode &node) = 0;
@@ -58,6 +73,14 @@ public:
 	virtual void visit(IfelseASTnode &node) = 0;
 	virtual void visit(LocationASTnode &node) = 0;
 	virtual void visit(AssignstatementASTnode &node) = 0;
+	virtual void visit(MethodASTnode &node) = 0;
+	virtual void visit(MethodArgsASTnode &node) = 0;
+	virtual void visit(DefinedMethodASTnode &node) = 0;
+	virtual void visit(CalloutargASTnode &node) = 0;
+	virtual void visit(ExprargASTnode &node) = 0;
+	virtual void visit(StringargASTnode &node) = 0;
+	virtual void visit(CalloutArgsASTnode &node) = 0;
+	virtual void visit(CalloutMethodASTnode &node) = 0;
 	virtual void visit(ProgramASTnode& node) = 0;
 };
 
@@ -228,7 +251,7 @@ public:
 	}
 
 	virtual void accept(ASTvisitor &v){
-		// v.visit(*this);
+		v.visit(*this);
 	}
 };
 
@@ -326,7 +349,7 @@ public:
 	}
 
 	virtual void accept(ASTvisitor &v){
-		// v.visit(*this);
+		v.visit(*this);
 	}
 };
 
@@ -378,7 +401,7 @@ public:
 	}
 
 	virtual void accept(ASTvisitor &v){
-		// v.visit(*this);
+		v.visit(*this);
 	}
 };
 
@@ -416,7 +439,7 @@ public:
 	}
 
 	virtual void accept(ASTvisitor &v){
-		// v.visit(*this);
+		v.visit(*this);
 	}
 };
 
@@ -613,11 +636,11 @@ public:
 	
 };
 
-class MethodArgsASTNode : public ExprASTnode {
+class MethodArgsASTnode : public ExprASTnode {
 private:
 	vector<class ExprASTnode *> arguments_list;
 public:
-	MethodArgsASTNode(){}
+	MethodArgsASTnode(){}
 
 	void push_argument(class ExprASTnode * expr){
 		arguments_list.push_back(expr);
@@ -636,16 +659,16 @@ public:
 class DefinedMethodASTnode : public MethodASTnode{
 private:
 	string method_name;
-	class MethodArgsASTNode* arguments_list;
+	class MethodArgsASTnode* arguments_list;
 public:
-	DefinedMethodASTnode(string _method_name, class MethodArgsASTNode* _arguments_list):
+	DefinedMethodASTnode(string _method_name, class MethodArgsASTnode* _arguments_list):
 	method_name(_method_name), arguments_list(_arguments_list) {}
 
 	string getMethodName(){
 		return method_name;
 	}
 	
-	class MethodArgsASTNode*  getArgsList(){
+	class MethodArgsASTnode*  getArgsList(){
 		return arguments_list;
 	}
 
@@ -654,7 +677,7 @@ public:
 	}
 };
 
-class CalloutargASTnode : public ASTnode{
+class CalloutargASTnode {
 public:
 	CalloutargASTnode(){}
 };
@@ -728,7 +751,7 @@ public:
 	}
 
 	virtual void accept(ASTvisitor &v){
-		// v.visit(*this);
+		v.visit(*this);
 	}
 };
 

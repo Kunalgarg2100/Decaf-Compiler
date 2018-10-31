@@ -54,6 +54,10 @@ public:
 			fprintf(stdout, "<id = %s , size = %d >\n", var_name.c_str(), array_size);
 	}
 
+	virtual void visit(IdtypeASTnode& node){
+		fprintf(stdout,"IdtypeASTnode\n");
+	}
+
 	virtual void visit(VarlistASTnode& node){
 		fprintf(stdout,"VarlistASTnode\n");
 		vector<class IdASTnode*> var_names = node.getVarList();
@@ -81,6 +85,10 @@ public:
 			var_list[i]->accept(*this);
 	}
 
+	virtual void visit(IdtypelistASTnode& node){
+		fprintf(stdout,"IdltypelistASTnode\n");
+	}
+
 	virtual void visit(VardeclASTnode &node){
 		fprintf(stdout,"VardeclASTnode\n");
 		fprintf(stdout,"<datatype = %s\n",node.getdataType().c_str());
@@ -93,6 +101,14 @@ public:
 		vector<class VardeclASTnode *> var_decl_list = node.getVardeclList();
 		for(int i=0; i< sz(var_decl_list) ;i++)
 			var_decl_list[i]->accept(*this);
+	}
+
+	virtual void visit(MethoddeclASTnode &node){
+		fprintf(stdout,"MethoddeclASTnode\n");
+	}
+
+	virtual void visit(MethoddecllistASTnode &node){
+		fprintf(stdout,"MethoddecllistASTnode\n");
 	}
 
 	virtual void visit(StatementASTnode &node){
@@ -181,6 +197,38 @@ public:
 		fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
 		class ExprASTnode * expr = node.getExpr();
 		expr->accept(*this);
+	}
+
+
+	virtual void visit(MethodASTnode &node){
+		fprintf(stdout,"MethodASTnode\n");
+	}
+
+	virtual void visit(MethodArgsASTnode &node){
+		fprintf(stdout,"MethodArgsASTnode\n");
+	}
+
+	virtual void visit(DefinedMethodASTnode &node){
+		fprintf(stdout,"DefinedMethodASTnode\n");
+	}
+
+	virtual void visit(CalloutargASTnode &node){
+		fprintf(stdout,"CalloutargASTnode\n");
+	}
+
+	virtual void visit(ExprargASTnode &node){
+		fprintf(stdout,"ExprargASTnode\n");
+	}
+
+	virtual void visit(StringargASTnode &node){
+		fprintf(stdout,"StringargASTnode\n");
+	}
+	virtual void visit(CalloutArgsASTnode &node){
+		fprintf(stdout,"CalloutArgsASTnode\n");
+	}
+
+	virtual void visit(CalloutMethodASTnode &node){
+		fprintf(stdout,"CalloutMethodASTnode\n");
 	}
 
 	virtual void visit(ProgramASTnode& node){

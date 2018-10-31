@@ -26,7 +26,7 @@ ProgramASTnode * rootnode;
 	class BlockstatementASTnode * block;
 	class LocationASTnode * location;
 	class MethodASTnode * method_call;
-	class MethodArgsASTNode * method_args;
+	class MethodArgsASTnode * method_args;
 	class CalloutargASTnode * callout_arg;
 	class CalloutArgsASTnode * callout_args_list;
 	class IdtypelistASTnode * arg_list;
@@ -153,7 +153,7 @@ method_name : ID
 	    ;
 method_args : expr { $$->push_argument($1); }
 	    | method_args COMMA expr { $1->push_argument($3); $$ = $1;}
-	    | %empty { $$ = new MethodArgsASTNode();}
+	    | %empty { $$ = new MethodArgsASTnode();}
 	    ;
 callout_args_list : callout_arg { $$ = new CalloutArgsASTnode(); $$->push_argument($1);}
 	    | callout_args_list COMMA callout_arg { $1->push_argument($3); $$ = $1; }
