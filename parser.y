@@ -58,6 +58,7 @@ ProgramASTnode * rootnode;
 %type <callout_arg> callout_arg;
 %type <callout_args_list> callout_args_list;
 %type <arg_list> arg_list;
+%type <arg_list> arg_single;
 %type <method_decl> method_decl;
 %type <method_decl_list> method_decl_list;
 %type <expr> expr;
@@ -89,8 +90,6 @@ ProgramASTnode * rootnode;
 %%
 program : CLASS PROGRAM COB field_decl_list method_decl_list CCB
 		{ $$ = new ProgramASTnode($4, $5); rootnode = $$; printf("Program Parsed successfully");}
-		| CLASS PROGRAM COB field_decl_list CCB
-		{ $$ = new ProgramASTnode($4); rootnode = $$; printf("Program Parsed successfully");}
 ;
 //field_decl_list : field_decl field_decl_list (not working)
 field_decl_list : field_decl_list field_decl { $$->push_fielddecl($2); }
@@ -105,27 +104,28 @@ id_list : ID { $$ = new IdASTnode(string($1)); }
 	| ID SOB INTEGER_LITERAL SCB { $$ = new IdASTnode(string($1), $3); }
 	;
 //method_decl_list : method_decl_list method_decl (not working)
-method_decl_list : method_decl_list method_decl { $1->push_methoddecl($2); $$ = $1; }
-		 | method_decl { $$ = new MethoddecllistASTnode(); $$->push_methoddecl($1); }
+method_decl_list : method_decl method_decl_list { $2->push_methoddecl($1); $$ = $2; }
+		 | %empty { $$ = new MethoddecllistASTnode(); }
 		 ;
 method_decl : DATA_TYPE ID OB arg_list CB block { $$ = new MethoddeclASTnode(string($1), $2, $4, $6); }
-	    | VOID ID OB arg_list CB block { $$ = new MethoddeclASTnode(string($1), $2, $4, $6); }
+	    | VOID ID OB arg_list CB block { cout << string($1) << endl; $$ = new MethoddeclASTnode(string($1), $2, $4, $6); }
 	    ;
-arg_list : DATA_TYPE ID { $$ = new IdtypelistASTnode() ; $$->push_idtype(new IdtypeASTnode(string($1),$2)); }
-	 | arg_list COMMA  DATA_TYPE ID { $1->push_idtype(new IdtypeASTnode(string($3),$4)); $$ = $1;}
-	 //| %empty
+arg_list : DATA_TYPE ID arg_single { $$->push_idtype(new IdtypeASTnode(string($1),$2)); }
+	 | %empty  { $$ = new IdtypelistASTnode(); }
 	 ;
+arg_single : COMMA DATA_TYPE ID arg_single { $4->push_idtype(new IdtypeASTnode(string($2),$3)); $$ = $4; }
+	 | %empty  { $$ = new IdtypelistASTnode(); }
 block : COB var_decl_list statement_list CCB { $$ = new BlockstatementASTnode($2, $3); }
       ;
-var_decl_list : var_decl SEMICOLON var_decl_list { $$->push_vardecl($1); }
+var_decl_list : var_decl var_decl_list { $2->push_vardecl($1); $$=$2; }
 	      | %empty { $$ = new VardecllistASTnode(); }
 	      ;
-var_decl : DATA_TYPE var_list {$$ = new VardeclASTnode(string($1), $2); }
+var_decl : DATA_TYPE var_list SEMICOLON { $$ = new VardeclASTnode(string($1), $2); }
 	 ;
 var_list : ID { $$ = new IdlistASTnode(); $$->push_id(new IdASTnode(string($1))); }
 	 | var_list COMMA ID { $1->push_id(new IdASTnode(string($3))); $$ = $1;}
 	 ;
-statement_list : statement_list statement { $1-> push_statement($2); $$ = $1; }
+statement_list : statement statement_list { $2-> push_statement($1); $$ = $2; }
 	       | %empty { $$ =  new StatementlistASTnode(); }
 	       ;
 statement : location assign_op expr SEMICOLON { $$ = new AssignstatementASTnode($1, string($2), $3); }
@@ -151,7 +151,7 @@ method_call : method_name OB method_args CB { $$ = new DefinedMethodASTnode(stri
 	    ;
 method_name : ID
 	    ;
-method_args : expr { $$->push_argument($1); }
+method_args : expr { $$ = new MethodArgsASTnode(); $$->push_argument($1); }
 	    | method_args COMMA expr { $1->push_argument($3); $$ = $1;}
 	    | %empty { $$ = new MethodArgsASTnode();}
 	    ;
@@ -159,9 +159,8 @@ callout_args_list : callout_arg { $$ = new CalloutArgsASTnode(); $$->push_argume
 	    | callout_args_list COMMA callout_arg { $1->push_argument($3); $$ = $1; }
 	    ;
 callout_arg : expr { $$ = new ExprargASTnode($1); }
-	    | STRING {$$ = new StringargASTnode(string($1)); }
+	    | STRING { $$ = new StringargASTnode(string($1)); }
 	    ;
-//expr : expr ADD expr   { $$ = new BinaryExprASTnode($1, $3, "+"); }
 expr : location { $$ = $1;}
      | method_call { $$ = $1;}
      | literal { $$ = $1; }
@@ -191,8 +190,8 @@ cond_expr : expr AND expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
 	  | expr OR expr { $$ = new BinaryExprASTnode($1, $3, string($2)); }
 	  ;
 literal : INTEGER_LITERAL { $$ = new IntLitExprASTnode($1); }
-	| CHAR_LITERAL { $$ = new CharLitExprASTnode($1); }
-	| BOOL_LITERAL { $$ = new BoolLitExprASTnode($1); }
+	| CHAR_LITERAL { $$ = new CharLitExprASTnode(char($1)); }
+	| BOOL_LITERAL { $$ = new BoolLitExprASTnode(string($1)); }
 	;
 %%
 int main(int argc, char **argv)

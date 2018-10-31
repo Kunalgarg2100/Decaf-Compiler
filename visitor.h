@@ -192,11 +192,11 @@ public:
 
 	virtual void visit(AssignstatementASTnode &node){
 		fprintf(stdout,"AssignstatementASTnode\n");
-		class LocationASTnode * location = node.getLocation();
-		location->accept(*this);
-		fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
-		class ExprASTnode * expr = node.getExpr();
-		expr->accept(*this);
+		// class LocationASTnode * location = node.getLocation();
+		// location->accept(*this);
+		// fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
+		// class ExprASTnode * expr = node.getExpr();
+		// expr->accept(*this);
 	}
 
 
