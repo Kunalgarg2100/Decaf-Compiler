@@ -23,8 +23,8 @@
 #include "llvm/IR/Verifier.h"
 #define sz(a) (int)a.size()
 using namespace std;
-static Module *Module_Ob;
 static LLVMContext mycontext;
+static Module *Module_Ob = new Module("Decaff", mycontext);;
 static IRBuilder<> Builder(mycontext);
 static std::map<std::string, Value*>Named_Values;
 
@@ -57,9 +57,9 @@ class codegenvisitor : public CodeGenvisitor
  		Value * val = expr->codegen(*this);
  		string unary_operator = node.getOp();
  		if(unary_operator == "!")
- 			return NULL;
+ 			return Builder.CreateNot(val,"not");
  		else if(unary_operator == "-")
- 			return NULL;
+ 			return Builder.CreateNeg(val,"neg");
  		
  		return	LogErrorV("Unknown unary_operator");
  	}
@@ -88,7 +88,23 @@ class codegenvisitor : public CodeGenvisitor
  		return NULL;
  	}
 
- 	virtual Value * Codegen(IdASTnode& node){
+ 	virtual Value * Codegen(IdASTnode& node, Type * datatype){
+ 		fprintf(stdout,"IdASTnode\n");
+		int array_size = node.getSize();
+		string var_name = node.getId().c_str();
+		if(array_size == -1) {
+			fprintf(stdout, "<id = %s >\n" ,var_name.c_str());
+			cout << datatype << endl;
+			GlobalVariable * var = new GlobalVariable(*Module_Ob, datatype, false, GlobalValue::CommonLinkage, 0, var_name);
+			var->setInitializer(ConstantInt::get(datatype, 0, true)); 
+		}
+		else {
+			ArrayType* arrayType = ArrayType::get(datatype, array_size);
+			GlobalVariable * var = new GlobalVariable(* Module_Ob, arrayType , false, GlobalValue::CommonLinkage, 0, var_name);
+			var->setInitializer(ConstantAggregateZero::get(arrayType)); 
+
+			// fprintf(stdout, "<id = %s , size = %d >\n", var_name.c_str(), array_size);
+		}
  		return NULL; 		
  	}
 
@@ -96,16 +112,41 @@ class codegenvisitor : public CodeGenvisitor
  		return NULL;
 	}
 
-	virtual Value * Codegen(VarlistASTnode& node){
+	virtual Value * Codegen(VarlistASTnode& node, Type * datatype){
+		fprintf(stdout,"VarlistASTnode\n");
+		vector<class IdASTnode*> var_names = node.getVarList();
+		for(uint i=0; i< var_names.size();i++)
+			var_names[i]->codegen(*this, datatype);
+
  		return NULL;
 	}
 
 	virtual Value * Codegen(FielddeclASTnode& node){
+ 		fprintf(stdout,"FielddeclASTnode\n");
+ 		Type * datatype;
+ 		// Value * val = NULL;
+		string data_type = node.getdataType();
+		if(data_type == "int")
+			datatype = Type::getInt32Ty(mycontext);
+		else if (data_type == "boolean")
+			datatype = Type::getInt1Ty(mycontext);
+		else
+			datatype = Type::getVoidTy(mycontext);
+
+		class VarlistASTnode * var_names = node.getVarList();
+		var_names->codegen(*this,datatype);
+
  		return NULL;
 	}
 
  	virtual Value * Codegen(FielddecllistASTnode& node){
- 		return NULL;
+ 		fprintf(stdout,"FielddecllistASTnode\n");
+		vector<class FielddeclASTnode*> field_decl_list = node.getFielddeclList();
+		for(uint i=0; i<field_decl_list.size();i++)
+			field_decl_list[i]->codegen(*this);
+
+		return NULL;
+
  	}
 
  	virtual Value * Codegen(IdlistASTnode& node){
@@ -205,7 +246,16 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(ProgramASTnode& node){
- 		return NULL;
+ 		fprintf(stdout,"ProgramASTnode\n");
+ 		Value * val = NULL;
+		class FielddecllistASTnode* field_decl_list = node.getFielddeclList();
+		class MethoddecllistASTnode* method_decl_list = node.getMethoddeclList();
+		val = field_decl_list->codegen(*this);
+		cout << val << endl;
+		//if(method_decl_list != NULL)
+		//	val = method_decl_list->codegen(*this);
+		Module_Ob->print(llvm::errs(), nullptr);
+ 		return val;
  	}
 };
 
