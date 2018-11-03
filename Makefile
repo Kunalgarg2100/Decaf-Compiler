@@ -1,5 +1,5 @@
-CC=g++
-CFLAGS=-Wall -std=c++14
+CC=clang++-6.0
+CFLAGS=-Wall `llvm-config-6.0 --cxxflags --ldflags --system-libs --libs core`
 
 parser: parser.y scanner.l
 		bison -d parser.y

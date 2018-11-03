@@ -2,8 +2,9 @@
 #include <cstdio>
 #include <string.h>
 #include "visitor.h"
+#include "codegenvisitor.h"
 using namespace std;
-int yylex(void);
+extern int yylex(void);
 void yyerror (char const *);
 ProgramASTnode * rootnode;
 %}
@@ -202,8 +203,10 @@ int main(int argc, char **argv)
 {
   yyparse();
   printf("\nParsing Completed\n");
-  class visitor v;
-  rootnode->accept(v);
+  //class visitor v;
+  //rootnode->accept(v);
+  class codegenvisitor v;
+  rootnode->codegen(v);
   return 0;
 }
 

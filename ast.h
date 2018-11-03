@@ -1,7 +1,11 @@
+#ifndef _AST_H
+#define _AST_H
 #include <cstdio>
 #include <vector>
 #include <string>
+#include "llvm/IR/Value.h"
 using namespace std;
+using namespace llvm;
 
 class ASTnode;
 class ExprASTnode;
@@ -84,6 +88,48 @@ public:
 	virtual void visit(ProgramASTnode& node) = 0;
 };
 
+class CodeGenvisitor {
+public:
+	virtual Value * Codegen(ASTnode& node) = 0;
+	virtual Value * Codegen(ExprASTnode& node) = 0;
+	virtual Value * Codegen(BinaryExprASTnode& node) = 0;
+	virtual Value * Codegen(UnaryExprASTnode& node) = 0;
+	virtual Value * Codegen(LitExprASTnode& node) = 0;
+	virtual Value * Codegen(IntLitExprASTnode& node) = 0;
+	virtual Value * Codegen(BoolLitExprASTnode& node) = 0;
+	virtual Value * Codegen(CharLitExprASTnode& node) = 0;
+	virtual Value * Codegen(IdASTnode& node) = 0;
+	virtual Value * Codegen(IdtypeASTnode& node) = 0;
+	virtual Value * Codegen(VarlistASTnode& node) = 0;
+	virtual Value * Codegen(FielddeclASTnode& node) = 0;
+	virtual Value * Codegen(FielddecllistASTnode& node) = 0;
+	virtual Value * Codegen(IdlistASTnode& node) = 0;
+	virtual Value * Codegen(IdtypelistASTnode& node) = 0;
+	virtual Value * Codegen(VardeclASTnode &node) = 0;
+	virtual Value * Codegen(MethoddeclASTnode &node) = 0;
+	virtual Value * Codegen(VardecllistASTnode &node) = 0;
+	virtual Value * Codegen(MethoddecllistASTnode &node) = 0;
+	virtual Value * Codegen(StatementASTnode &node) = 0;
+	virtual Value * Codegen(StatementlistASTnode &node) = 0;
+	virtual Value * Codegen(BreakstatementASTnode &node) = 0;
+	virtual Value * Codegen(ContinuestatementASTnode &node) = 0;
+	virtual Value * Codegen(ReturnstatementASTnode &node) = 0;
+	virtual Value * Codegen(BlockstatementASTnode &node) = 0;
+	virtual Value * Codegen(ForstatementASTnode &node) = 0;
+	virtual Value * Codegen(IfelseASTnode &node) = 0;
+	virtual Value * Codegen(LocationASTnode &node) = 0;
+	virtual Value * Codegen(AssignstatementASTnode &node) = 0;
+	virtual Value * Codegen(MethodASTnode &node) = 0;
+	virtual Value * Codegen(MethodArgsASTnode &node) = 0;
+	virtual Value * Codegen(DefinedMethodASTnode &node) = 0;
+	virtual Value * Codegen(CalloutargASTnode &node) = 0;
+	virtual Value * Codegen(ExprargASTnode &node) = 0;
+	virtual Value * Codegen(StringargASTnode &node) = 0;
+	virtual Value * Codegen(CalloutArgsASTnode &node) = 0;
+	virtual Value * Codegen(CalloutMethodASTnode &node) = 0;
+	virtual Value * Codegen(ProgramASTnode& node) = 0;
+};
+
 class ASTnode {
 	public :
 		ASTnode(){
@@ -100,6 +146,11 @@ class ExprASTnode : public ASTnode{
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
+
 };
 
 class BinaryExprASTnode : public ExprASTnode
@@ -127,6 +178,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class UnaryExprASTnode : public ExprASTnode
@@ -148,6 +203,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -176,6 +235,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class BoolLitExprASTnode : public LitExprASTnode{
@@ -192,6 +255,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class CharLitExprASTnode : public LitExprASTnode{
@@ -207,6 +274,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -232,6 +303,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class IdtypeASTnode {
@@ -253,6 +328,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class VarlistASTnode : public ASTnode {
@@ -271,6 +350,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -293,6 +376,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class FielddecllistASTnode {
@@ -311,6 +398,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -332,6 +423,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class IdtypelistASTnode {
@@ -350,6 +445,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -371,6 +470,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -403,6 +506,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class VardecllistASTnode {
@@ -421,6 +528,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -441,6 +552,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class StatementASTnode : public ASTnode{
@@ -449,6 +564,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -469,6 +588,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class BreakstatementASTnode : public StatementASTnode{
@@ -478,6 +601,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class ContinuestatementASTnode : public StatementASTnode{
@@ -486,6 +613,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -502,6 +633,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -523,6 +658,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -555,6 +694,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class IfelseASTnode : public StatementASTnode{
@@ -581,6 +724,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class LocationASTnode : public ExprASTnode{
@@ -601,6 +748,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -628,6 +779,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class MethodASTnode :  public StatementASTnode, public ExprASTnode {
@@ -653,6 +808,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };	
 
 
@@ -675,6 +834,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class CalloutargASTnode {
@@ -683,6 +846,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -700,6 +867,10 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
 
 class StringargASTnode : public CalloutargASTnode{
@@ -715,6 +886,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -734,6 +909,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 	
 };
@@ -756,6 +935,10 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
+	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
 	}
 };
 
@@ -780,4 +963,9 @@ public:
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
+
+	virtual Value * codegen(CodeGenvisitor &v){
+		return v.Codegen(*this);
+	}
 };
+#endif
