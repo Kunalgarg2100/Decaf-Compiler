@@ -99,13 +99,10 @@ public:
 	virtual Value * Codegen(BoolLitExprASTnode& node) = 0;
 	virtual Value * Codegen(CharLitExprASTnode& node) = 0;
 	virtual Value * Codegen(IdASTnode& node, Type * datatype) = 0;
-	virtual Value * Codegen(IdtypeASTnode& node) = 0;
 	virtual Value * Codegen(VarlistASTnode& node, Type * datatype) = 0;
 	virtual Value * Codegen(FielddeclASTnode& node) = 0;
 	virtual Value * Codegen(FielddecllistASTnode& node) = 0;
-
 	virtual Value * Codegen(IdlistASTnode& node) = 0;
-	virtual Value * Codegen(IdtypelistASTnode& node) = 0;
 	virtual Value * Codegen(VardeclASTnode &node) = 0;
 	virtual Value * Codegen(MethoddeclASTnode &node) = 0;
 	virtual Value * Codegen(VardecllistASTnode &node) = 0;
@@ -330,9 +327,6 @@ public:
 		v.visit(*this);
 	}
 
-	virtual Value * codegen(CodeGenvisitor &v){
-		return v.Codegen(*this);
-	}
 };
 
 class VarlistASTnode : public ASTnode {
@@ -446,10 +440,6 @@ public:
 
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
-	}
-
-	virtual Value * codegen(CodeGenvisitor &v){
-		return v.Codegen(*this);
 	}
 };
 
