@@ -26,7 +26,7 @@ using namespace std;
 static LLVMContext mycontext;
 static Module *Module_Ob = new Module("Decaff", mycontext);;
 static IRBuilder<> Builder(mycontext);
-static std::map<std::string, Value*>Named_Values;
+static std::map<std::string, llvm::AllocaInst *> Named_Values;
 
 class codegenvisitor : public CodeGenvisitor
 {
@@ -38,6 +38,14 @@ class codegenvisitor : public CodeGenvisitor
  	Value * LogErrorV(const char *Str) {
   		LogError(Str);
   		return nullptr;
+	}
+
+	/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of
+	// the function.  This is used for mutable variables etc.
+	/* https://llvm.org/docs/tutorial/LangImpl07.html */
+	static AllocaInst *CreateEntryBlockAlloca(Function *TheFunction, string &VarName, Type * datatype) {
+  		IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
+  		return TmpB.CreateAlloca(datatype, 0, VarName.c_str());
 	}
 
  	virtual Value * Codegen(ASTnode& node){
@@ -145,32 +153,34 @@ class codegenvisitor : public CodeGenvisitor
 
  	}
 
- // 	virtual Value * Codegen(IdtypeASTnode& node){
- // 		fprintf(stdout,"IdtypeASTnode\n");
- // 		Type * datatype;
-	// 	string data_type = node.getType().c_str();
-	// 	if(data_type == "int")
-	// 		datatype = Type::getInt32Ty(mycontext);
-	// 	else if (data_type == "boolean")
-	// 		datatype = Type::getInt1Ty(mycontext);
-
-	// 	
- // 		return NULL;
-	// }
-
  	virtual Value * Codegen(IdlistASTnode& node){
  		return NULL;
  	}
 
- 	// virtual Value * Codegen(IdtypelistASTnode& node){
- 	// // 	fprintf(stdout,"IdtypelistASTnode\n");
-		// // vector<class IdtypeASTnode*> var_list = node.getIdtypelist();
-		// // for(uint i=0; i<var_list.size();i++)
-		// // 	var_list[i]->codegen(*this);
- 	// 	return NULL;
- 	// }
-
  	virtual Value * Codegen(VardeclASTnode &node){
+		fprintf(stdout,"VardeclASTnode\n");
+		Type * datatype;
+		string data_type = node.getdataType().c_str();
+		if(data_type == "int")
+			datatype = Type::getInt32Ty(mycontext);
+		else if (data_type == "boolean")
+			datatype = Type::getInt1Ty(mycontext);
+		else
+			LogErrorV("Invalid return type");
+
+		class IdlistASTnode * varlist = node.getIdlist();
+		vector<class IdASTnode*> var_list = varlist->getIdlist();
+		for(int i=0;i < sz(var_list);i++){
+			//AllocaInst *alloc = new AllocaInst(datatype,0,var_list[i],BB);
+  			//alloc->setAlignment(4);
+  			// StoreInst * storeinst = new StoreInst(arg_it,alloc,BB);
+  			// Named_Values[argNames[Idx]] = alloc;
+  			// storeinst->setAlignment(4);	
+  			// Idx++;
+  			// arg_it++;
+
+		}
+		
  		return NULL;
  	}
 
@@ -200,13 +210,15 @@ class codegenvisitor : public CodeGenvisitor
 		
 		vector<Type*> argTypes;
 		vector<string> argNames;
+		vector<string> arryt;
 		class IdtypelistASTnode * vlist = node.getIdlist();
 		vector<class IdtypeASTnode*> var_list  = vlist->getIdtypelist();
 		
-		for(uint i=0; i<var_list.size();i++){
+		for(int i=var_list.size()-1; i>=0 ;i--){
 			Type * datatype;
 			string data_type = var_list[i]->getType().c_str();
 			string var_name = var_list[i]->getId().c_str();
+			cout << var_name << endl;
 			if(data_type == "int")
 		 		datatype = Type::getInt32Ty(mycontext);
 			else if (data_type == "boolean")
@@ -215,31 +227,33 @@ class codegenvisitor : public CodeGenvisitor
 				LogErrorV("Invalid data type of Function argument");
 			argTypes.push_back(datatype);
 			argNames.push_back(var_name);
+			arryt.push_back(data_type);
 		}
 
 
 		/* https://llvm.org/docs/tutorial/LangImpl03.html */
 		FunctionType * functiontype = FunctionType::get(returntype, argTypes, false);
 		Function *TheFunction = Function::Create(functiontype, Function::ExternalLinkage, methodName, Module_Ob);
-		
+		Function::arg_iterator arg_it = TheFunction->arg_begin();
 		/*set the name of each of the function’s arguments according to the names given in the Prototype. */
 		/* This step isn’t strictly necessary, but keeping the names consistent makes the IR more readable, and allows 
 		subsequent code to refer directly to the arguments for their names, rather than having to look up them up in the Prototype AST.*/
-
-		unsigned Idx = 0;
-		for (auto &Arg : TheFunction->args())
-  			Arg.setName(argNames[Idx++]);
 
   		BasicBlock *BB = BasicBlock::Create(mycontext, "entry", TheFunction);
   		Builder.SetInsertPoint(BB);
 
   		// Record the function arguments in the NamedValues map.
-  		Named_Values.clear();
-  		for (auto &Arg : TheFunction->args())
-    		Named_Values[Arg.getName()] = &Arg;
-
+		unsigned Idx = 0;
+  		for (auto &Arg : TheFunction->args()){
+  			Arg.setName(argNames[Idx]);
+  			AllocaInst * alloca = CreateEntryBlockAlloca(TheFunction, argNames[Idx], argTypes[Idx]);
+  			alloca->setAlignment(4);
+  			Builder.CreateAlignedStore(&Arg, alloca, 4);
+  			Named_Values[argNames[Idx]] = alloca;
+  			Idx++;
+  		}
+  		Block->codegen(*this);
     	Builder.CreateRet(NULL);
-
 
   		/*if (Value *RetVal = Block->codegen(*this)) {
     		// Finish off the function.
@@ -284,6 +298,15 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(BlockstatementASTnode &node){
+ 		fprintf(stdout,"BlockstatementASTnode\n");
+ 		Function *TheFunc = Builder.GetInsertBlock()->getParent();
+		class VardecllistASTnode * vardecllist = node.getVardeclList();
+		vector<class VardeclASTnode *> var_decl_list = vardecllist->getVardeclList();
+		for(int i=0; i< sz(var_decl_list) ;i++){
+			var_decl_list[i]->codegen(*this);
+		}
+		class StatementlistASTnode * statements_list = node.getStatementsList();
+		statements_list->codegen(*this);
  		return NULL;
  	}
 

@@ -97,7 +97,7 @@ public:
 	virtual void visit(IdtypelistASTnode& node){
 		fprintf(stdout,"IdtypelistASTnode\n");
 		vector<class IdtypeASTnode*> var_list = node.getIdtypelist();
-		for(uint i=0; i<var_list.size();i++)
+		for(int i=var_list.size()-1; i>=0 ;i--)
 			var_list[i]->accept(*this);
 	}
 

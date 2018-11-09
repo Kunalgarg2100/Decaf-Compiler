@@ -6,4 +6,6 @@ class Program {
 		void main(){
 		}
 	
+		void fun(boolean n,int m){
+		}
 }

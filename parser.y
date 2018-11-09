@@ -203,10 +203,10 @@ int main(int argc, char **argv)
 {
   yyparse();
   printf("\nParsing Completed\n");
-  //class visitor v;
-  //rootnode->accept(v);
-  class codegenvisitor v;
-  rootnode->codegen(v);
+  class visitor v;
+  rootnode->accept(v);
+  class codegenvisitor v1;
+  rootnode->codegen(v1);
   return 0;
 }
 
