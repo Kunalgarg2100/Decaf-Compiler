@@ -23,7 +23,7 @@ string (\\.|[^"])*
 "int"|"boolean" { fprintf(stdout,"DATA_TYPE:%s\n",yytext); yylval.str = strdup(yytext); return DATA_TYPE; }
 "true"|"false" { fprintf(stdout,"BOOL_LITERAL:%s\n",yytext); yylval.str = strdup(yytext); return BOOL_LITERAL; }
 {digit}+|"0x"{hex_digit}+ { fprintf(stdout,"INTEGER_LITERAL:%s\n",yytext); yylval.val = atoi(yytext); return INTEGER_LITERAL; }
-'{char}'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); yylval.ch = strdup(yytext)[0]; return CHAR_LITERAL; }
+'{char}'  { fprintf(stdout,"CHAR_LITERAL:%s\n",yytext); yylval.ch = strdup(yytext)[1]; return CHAR_LITERAL; }
 \"{string}\"  { fprintf(stdout,"STRING:%s\n",yytext); yylval.str = strdup(yytext); return STRING; }
 {alpha}+{alpha_num}* { fprintf(stdout,"IDENTIFER:%s\n",yytext);yylval.str = strdup(yytext); return ID; }
 [(] { fprintf(stdout,"OB:%s\n",yytext); return OB; }

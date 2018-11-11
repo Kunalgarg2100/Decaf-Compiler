@@ -107,7 +107,6 @@ public:
 	virtual Value * Codegen(MethoddeclASTnode &node) = 0;
 	virtual Value * Codegen(VardecllistASTnode &node) = 0;
 	virtual Value * Codegen(MethoddecllistASTnode &node) = 0;
-	virtual Value * Codegen(StatementASTnode &node) = 0;
 	virtual Value * Codegen(StatementlistASTnode &node) = 0;
 	virtual Value * Codegen(BreakstatementASTnode &node) = 0;
 	virtual Value * Codegen(ContinuestatementASTnode &node) = 0;
@@ -872,7 +871,9 @@ public:
 	argument(_str) {};
 
 	string getArgument(){
-		return argument;
+		int tmplen = strlen(argument.c_str());
+		string tmp = argument.substr(1, tmplen-2);
+		return tmp;
 	}
 
 	virtual void accept(ASTvisitor &v){
@@ -917,7 +918,9 @@ public:
 	method_name(_method_name), arguments_list(_arguments_list) {}
 
 	string getMethodName(){
-		return method_name;
+		int tmplen = strlen(method_name.c_str());
+		string tmp = method_name.substr(1, tmplen-2);
+		return tmp;
 	}
 	
 	class CalloutArgsASTnode*  getArgsList(){

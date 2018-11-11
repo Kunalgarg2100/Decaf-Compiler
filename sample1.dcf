@@ -4,6 +4,9 @@ class Program {
 		int k[5],p;
 
 		void main(){
+			int l,m;
+			m = 6;
+			callout("printf","123");
 		}
 	
 		void fun(boolean n,int m){

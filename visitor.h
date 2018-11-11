@@ -39,6 +39,7 @@ public:
 	}
 	
 	virtual void visit(IntLitExprASTnode& node){
+		fprintf(stdout,"IntLitExprASTnode\n");		
 		cout << "<integer value = \"" <<  node.getIntLit() << "\" >" << endl;
 	}
 

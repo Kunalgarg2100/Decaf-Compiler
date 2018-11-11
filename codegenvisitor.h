@@ -77,6 +77,8 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(IntLitExprASTnode& node){
+		fprintf(stdout,"IntLitExprASTnode\n");		
+ 		cout << node.getIntLit() << endl;
  		return ConstantInt::get(mycontext, APInt(32,node.getIntLit()));
  	}
 
@@ -159,6 +161,10 @@ class codegenvisitor : public CodeGenvisitor
 
  	virtual Value * Codegen(VardeclASTnode &node){
 		fprintf(stdout,"VardeclASTnode\n");
+		/* https://llvm.org/docs/tutorial/LangImpl05.html */
+		/* The first line gets the current Function object that is being built. It gets this by asking the 
+		builder for the current BasicBlock, and asking that block for its “parent” (the function it is currently embedded into).*/
+		Function *TheFunction = Builder.GetInsertBlock()->getParent();
 		Type * datatype;
 		string data_type = node.getdataType().c_str();
 		if(data_type == "int")
@@ -171,16 +177,15 @@ class codegenvisitor : public CodeGenvisitor
 		class IdlistASTnode * varlist = node.getIdlist();
 		vector<class IdASTnode*> var_list = varlist->getIdlist();
 		for(int i=0;i < sz(var_list);i++){
-			//AllocaInst *alloc = new AllocaInst(datatype,0,var_list[i],BB);
-  			//alloc->setAlignment(4);
-  			// StoreInst * storeinst = new StoreInst(arg_it,alloc,BB);
-  			// Named_Values[argNames[Idx]] = alloc;
-  			// storeinst->setAlignment(4);	
-  			// Idx++;
-  			// arg_it++;
-
+			string var_name = var_list[i]->getId();
+			AllocaInst * alloca = CreateEntryBlockAlloca(TheFunction,var_name, datatype);
+  			alloca->setAlignment(4);
+  			/* initializing variables to 0 */
+  			Value * initval = ConstantInt::get(mycontext, APInt(32,0));
+  			Builder.CreateAlignedStore(initval, alloca, 4);
+  			// Old_vals[var] = NamedValues[var];
+    		Named_Values[var_name] = alloca;
 		}
-		
  		return NULL;
  	}
 
@@ -234,7 +239,7 @@ class codegenvisitor : public CodeGenvisitor
 		/* https://llvm.org/docs/tutorial/LangImpl03.html */
 		FunctionType * functiontype = FunctionType::get(returntype, argTypes, false);
 		Function *TheFunction = Function::Create(functiontype, Function::ExternalLinkage, methodName, Module_Ob);
-		Function::arg_iterator arg_it = TheFunction->arg_begin();
+		// Function::arg_iterator arg_it = TheFunction->arg_begin();
 		/*set the name of each of the function’s arguments according to the names given in the Prototype. */
 		/* This step isn’t strictly necessary, but keeping the names consistent makes the IR more readable, and allows 
 		subsequent code to refer directly to the arguments for their names, rather than having to look up them up in the Prototype AST.*/
@@ -249,6 +254,7 @@ class codegenvisitor : public CodeGenvisitor
   			AllocaInst * alloca = CreateEntryBlockAlloca(TheFunction, argNames[Idx], argTypes[Idx]);
   			alloca->setAlignment(4);
   			Builder.CreateAlignedStore(&Arg, alloca, 4);
+  			cout << Idx << argNames[Idx] << endl;
   			Named_Values[argNames[Idx]] = alloca;
   			Idx++;
   		}
@@ -277,11 +283,13 @@ class codegenvisitor : public CodeGenvisitor
  		return NULL;
  	}
  	
- 	virtual Value * Codegen(StatementASTnode &node){
- 		return NULL;
- 	}
- 	
  	virtual Value * Codegen(StatementlistASTnode &node){
+ 		fprintf(stdout,"StatementlistASTnode\n");
+		vector<class StatementASTnode*> statements_list = node.getStatementsList();
+		for(int i=0; i< sz(statements_list) ;i++){
+			cout << i << " ";
+			statements_list[i]->codegen(*this);
+		}
  		return NULL;
  	}
 
@@ -299,7 +307,6 @@ class codegenvisitor : public CodeGenvisitor
 
  	virtual Value * Codegen(BlockstatementASTnode &node){
  		fprintf(stdout,"BlockstatementASTnode\n");
- 		Function *TheFunc = Builder.GetInsertBlock()->getParent();
 		class VardecllistASTnode * vardecllist = node.getVardeclList();
 		vector<class VardeclASTnode *> var_decl_list = vardecllist->getVardeclList();
 		for(int i=0; i< sz(var_decl_list) ;i++){
@@ -311,6 +318,57 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(ForstatementASTnode &node){
+ 		/*https://llvm.org/docs/tutorial/LangImpl07.html#id1*/
+ 		cout << "ForstatementASTnode" << endl;
+ 		string varName = node.getId().c_str();
+ 		Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+ 		// Create an alloca for the variable in the entry block.
+  		AllocaInst * Alloca = CreateEntryBlockAlloca(TheFunction, varName, Type::getInt32Ty(mycontext));
+
+ 		 // Emit the start code first, without 'variable' in scope.
+  		class ExprASTnode * initial_cond = node.getInitialcond();
+		Value * StartVal = initial_cond->codegen(*this);
+		if (!StartVal){
+		    return nullptr;
+		}
+		// Store the value into the alloca.
+  		Builder.CreateAlignedStore(StartVal, Alloca, 4);
+
+  		// Make the new basic block for the loop header, inserting after current block
+  		BasicBlock *LoopBB = BasicBlock::Create(mycontext, "loop", TheFunction);
+  		
+  		// Insert an explicit fall through from the current block to the LoopBB.
+  		Builder.CreateBr(LoopBB);
+
+  		// Start insertion in LoopBB.
+  		Builder.SetInsertPoint(LoopBB);
+
+		//Setting step value of variable to 1
+		Value * StepVal = ConstantInt::get(mycontext,APInt(32,1));
+
+		// Reload, increment, and restore the alloca.  This handles the case where
+  		// the body of the loop mutates the variable.
+  		Value * CurVar = Builder.CreateAlignedLoad(Alloca, 4, varName);
+  		Value * NextVar = Builder.CreateFAdd(CurVar, StepVal, "nextvar");
+  		Builder.CreateAlignedStore(NextVar, Alloca, 4);
+
+  		class ExprASTnode * break_cond = node.getBreakcond();
+		Value * EndCond = break_cond->codegen(*this);
+		if (!EndCond){
+    		return nullptr;
+		}
+		EndCond = Builder.CreateICmpSLT(NextVar, EndCond , "loopcondition");
+		
+		// Create the "after loop" block and insert it.
+  		BasicBlock *AfterBB = BasicBlock::Create(mycontext, "afterloop", TheFunction);
+
+  		// Insert the conditional branch into the end of LoopEndBB.
+  		Builder.CreateCondBr(EndCond, LoopBB, AfterBB);
+
+  		// Any new code will be inserted in AfterBB.
+  		Builder.SetInsertPoint(AfterBB);
+
  		return NULL;
  	}
 
@@ -323,7 +381,28 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(AssignstatementASTnode &node){
- 		return NULL;
+ 		class LocationASTnode * location = node.getLocation();
+ 		string varname = location->getId();
+ 		Value* cur = Named_Values[varname];
+  		if(cur == 0){
+    		return LogErrorV("Unknown Variable Name");
+  		}
+
+ 		class ExprASTnode * expr = node.getExpr();
+  		Value * val = expr->codegen(*this);
+  		// cout << "DSDFSD";
+ 		string op = node.getOp();
+ 		cout << op << endl;
+
+ 		if(op == "+="){
+    		val = Builder.CreateAdd(Builder.CreateLoad(cur,varname), val,"addEqualToTmp");
+  		}
+  		else if (op == "-="){
+    		val = Builder.CreateSub(Builder.CreateLoad(cur,varname), val,"subEqualToTmp");
+  		}
+
+  		return Builder.CreateAlignedStore(val, cur, 4);
+		return NULL;
  	}
 
  	virtual Value * Codegen(MethodASTnode &node){
@@ -343,11 +422,15 @@ class codegenvisitor : public CodeGenvisitor
  	}
  	
  	virtual Value * Codegen(ExprargASTnode &node){
- 		return NULL;
+ 		class ExprASTnode * expr_argument = node.getArgument();
+		Value * val = expr_argument->codegen(*this);
+ 		return val;
  	}
  	
  	virtual Value * Codegen(StringargASTnode &node){
- 		return NULL;
+ 		string argument =  node.getArgument();
+ 		Value * v = Builder.CreateGlobalStringPtr(argument.c_str());
+ 		return v;
  	}
  	
  	virtual Value * Codegen(CalloutArgsASTnode &node){
@@ -355,7 +438,26 @@ class codegenvisitor : public CodeGenvisitor
  	}
  	
  	virtual Value * Codegen(CalloutMethodASTnode &node){
- 		return NULL;
+ 		string method_name = node.getMethodName();
+ 		cout << "m" << method_name << endl;
+ 		class CalloutArgsASTnode * arglist = node.getArgsList();
+ 		vector<class CalloutargASTnode *> arguments_list = arglist->getArgumentsList();
+
+ 		vector<Value* > args;
+ 		vector<Type* > argTypes;
+		
+		for(int i=0; i< sz(arguments_list) ;i++){
+			Value *v = arguments_list[i]->codegen(*this);
+			args.push_back(v);
+			Type *vtype = v->getType();
+			argTypes.push_back(vtype);
+		}
+
+		FunctionType * functiontype = FunctionType::get(Builder.getInt32Ty(), argTypes, false);
+		Constant * Func = Module_Ob->getOrInsertFunction(method_name, functiontype);
+		if(!Func) return NULL;
+ 		Value * v = Builder.CreateCall(Func,args,"callouttmp");
+  		return v;
  	}
 
  	virtual Value * Codegen(ProgramASTnode& node){
