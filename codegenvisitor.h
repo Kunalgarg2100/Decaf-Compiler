@@ -110,7 +110,7 @@ class codegenvisitor : public CodeGenvisitor
 		}
 		else {
 			ArrayType* arrayType = ArrayType::get(datatype, array_size);
-			GlobalVariable * var = new GlobalVariable(* Module_Ob, arrayType , false, GlobalValue::CommonLinkage, 0, var_name);
+			GlobalVariable * var = new GlobalVariable(*Module_Ob, arrayType , false, GlobalValue::CommonLinkage, 0, var_name);
 			var->setInitializer(ConstantAggregateZero::get(arrayType)); 
 
 			// fprintf(stdout, "<id = %s , size = %d >\n", var_name.c_str(), array_size);
@@ -377,6 +377,16 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(LocationASTnode &node){
+ 		string varname = node.getId();
+ 		Value* v = Named_Values[varname];
+		class ExprASTnode * expr = node.getExpr();
+		if(expr == NULL){
+			v = Builder.CreateLoad(v);
+			return v;
+		}
+		else{
+			expr->codegen(*this);
+		}
  		return NULL;
  	}
 
@@ -429,7 +439,8 @@ class codegenvisitor : public CodeGenvisitor
  	
  	virtual Value * Codegen(StringargASTnode &node){
  		string argument =  node.getArgument();
- 		Value * v = Builder.CreateGlobalStringPtr(argument.c_str());
+ 		cout << "arg" << argument <<endl;
+ 		Value * v = Builder.CreateGlobalStringPtr(argument);
  		return v;
  	}
  	
@@ -444,19 +455,18 @@ class codegenvisitor : public CodeGenvisitor
  		vector<class CalloutargASTnode *> arguments_list = arglist->getArgumentsList();
 
  		vector<Value* > args;
- 		vector<Type* > argTypes;
-		
 		for(int i=0; i< sz(arguments_list) ;i++){
 			Value *v = arguments_list[i]->codegen(*this);
 			args.push_back(v);
-			Type *vtype = v->getType();
-			argTypes.push_back(vtype);
 		}
 
-		FunctionType * functiontype = FunctionType::get(Builder.getInt32Ty(), argTypes, false);
-		Constant * Func = Module_Ob->getOrInsertFunction(method_name, functiontype);
+/*https://stackoverflow.com/questions/35526075/llvm-how-to-implement-print-function-in-my-language*/
+		Constant * Func = Module_Ob->getOrInsertFunction(method_name, 
+														FunctionType::get(IntegerType::getInt32Ty(mycontext), 
+																		PointerType::get(Type::getInt8Ty(mycontext), 0),
+																		true));
 		if(!Func) return NULL;
- 		Value * v = Builder.CreateCall(Func,args,"callouttmp");
+ 		Value * v = Builder.CreateCall(Func,args,"call");
   		return v;
  	}
 

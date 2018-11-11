@@ -7,6 +7,9 @@ class Program {
 			int l,m;
 			m = 6;
 			callout("printf","123");
+			callout("printf","223");
+			callout("printf","%d",5);
+			callout("printf","%d",m);
 		}
 	
 		void fun(boolean n,int m){
