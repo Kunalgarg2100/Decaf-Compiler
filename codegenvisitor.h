@@ -70,6 +70,7 @@ class codegenvisitor : public CodeGenvisitor
     		val = Builder.CreateAdd(left,right,"addop");
 		}
 		else if(!binop.compare("-")){
+			cout << "NE -" << endl;
 			val = Builder.CreateSub(left,right,"subop");
 		}
 		else if(!binop.compare("%")){
@@ -415,7 +416,7 @@ class codegenvisitor : public CodeGenvisitor
   		Named_Values[varName] = Alloca;
 
   		block->codegen(*this);
-  		
+
   		//Setting step value of variable to 1
 		Value * StepVal = ConstantInt::get(mycontext,APInt(32,1));
 
@@ -488,9 +489,13 @@ class codegenvisitor : public CodeGenvisitor
   		// Emit else block.
   		TheFunction->getBasicBlockList().push_back(ElseBB);
   		Builder.SetInsertPoint(ElseBB);
-  		Value * ElseV = elsestatement->codegen(*this);
-  		if (!ElseV)
-    		return nullptr;
+  		if(elsestatement != NULL){
+			Value * ElseV = elsestatement->codegen(*this);
+			if (!ElseV)
+    			return nullptr;
+		}
+  		// elsestatement->codegen(*this);
+  		
 
     	Builder.CreateBr(MergeBB);
   		// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
@@ -509,14 +514,38 @@ class codegenvisitor : public CodeGenvisitor
 
  	virtual Value * Codegen(LocationASTnode &node){
  		string varname = node.getId();
+ 		cout << varname << '\n';
  		Value* v = Named_Values[varname];
+ 		if(!v){
+ 			v = Module_Ob->getNamedGlobal(varname);
+ 		}
+ 		if(!v){
+ 			LogErrorV("Unknown variable");
+ 		}
 		class ExprASTnode * expr = node.getExpr();
 		if(expr == NULL){
+ 			cout << "LOC2" << endl;
 			v = Builder.CreateLoad(v);
 			return v;
 		}
 		else{
-			expr->codegen(*this);
+ 			cout << "LOC1" << endl;
+
+			Value * pos = expr->codegen(*this);
+
+			cout << "SFSF" << endl;
+			if(!pos) {
+				cout << "pro" << endl;
+				return NULL;
+			}
+			vector<Value*> indices;
+			indices.push_back(Builder.getInt32(0));
+			indices.push_back(pos);
+			// v = Builder.CreateGEP(Type::getInt32Ty(mycontext), v, indices);
+			v = Builder.CreateGEP(v, indices, varname + "INDEX");
+			v = Builder.CreateLoad(v);
+			return v;
+
 		}
  		return NULL;
  	}
@@ -524,13 +553,30 @@ class codegenvisitor : public CodeGenvisitor
  	virtual Value * Codegen(AssignstatementASTnode &node){
  		class LocationASTnode * location = node.getLocation();
  		string varname = location->getId();
- 		Value* cur = Named_Values[varname];
-  		if(cur == 0){
-    		return LogErrorV("Unknown Variable Name");
-  		}
+ 		Value* v = Named_Values[varname];
+ 		if(!v){
+ 			v = Module_Ob->getNamedGlobal(varname);
+ 		}
+ 		if(!v){
+ 			LogErrorV("Unknown variable");
+ 		}
+ 		class ExprASTnode * expr = location->getExpr();
+		if(expr != NULL){
+			Value * pos = expr->codegen(*this);
+			vector<Value*> indices;
+			indices.push_back(Builder.getInt32(0));
+			indices.push_back(pos);
+			v = Builder.CreateGEP(v, indices, varname + "INDEX");
+		}
+ 		Value* cur = v;
 
- 		class ExprASTnode * expr = node.getExpr();
-  		Value * val = expr->codegen(*this);
+ 		class ExprASTnode * nodeexpr = node.getExpr();
+		Value * val = nodeexpr->codegen(*this);
+  	// 	if(cur == 0){
+   //  		return LogErrorV("Unknown Variable Name");
+  	// 	}
+
+ 		// class ExprASTnode * expr = node.getExpr();
   		// cout << "DSDFSD";
  		string op = node.getOp();
  		cout << op << endl;
@@ -543,7 +589,6 @@ class codegenvisitor : public CodeGenvisitor
   		}
 
   		return Builder.CreateAlignedStore(val, cur, 4);
-		return NULL;
  	}
 
  	virtual Value * Codegen(MethodASTnode &node){

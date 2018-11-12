@@ -1,0 +1,13 @@
+class Program {
+	
+	int arr[110];
+
+	void main(){
+		int n;
+		n = 5;
+		for i=0, n-1 {
+			callout("printf","%d", arr[i]);
+		}
+	}
+
+}
