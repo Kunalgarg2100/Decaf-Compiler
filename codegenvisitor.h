@@ -57,7 +57,55 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(BinaryExprASTnode& node){
- 		return NULL;
+ 		cout << "BINARY" << endl;
+ 		ExprASTnode * leftexpr = node.getLeft();
+		ExprASTnode * rightexpr = node.getRight();
+		string binop = node.getOp();
+		Value * left = leftexpr->codegen(*this);
+		Value * right = rightexpr->codegen(*this);
+		Value * val = nullptr;
+		/* http://llvm.org/doxygen/classllvm_1_1BinaryOperator.html 
+		http://llvm.org/doxygen/classllvm_1_1IRBuilder.html */
+		if(!binop.compare("+")){
+    		val = Builder.CreateAdd(left,right,"addop");
+		}
+		else if(!binop.compare("-")){
+			val = Builder.CreateSub(left,right,"subop");
+		}
+		else if(!binop.compare("%")){
+			val = Builder.CreateSRem(left,right,"modop");
+		}
+		else if(!binop.compare("*")){
+			val = Builder.CreateMul(left,right,"multop");
+		}
+		else if(!binop.compare("/")){
+			val = Builder.CreateSDiv(left,right,"divop");
+		}
+		else if(!binop.compare(">")){
+			val = Builder.CreateICmpSGT(left,right,"gtop");
+		}
+		else if(!binop.compare("<")){
+			val = Builder.CreateICmpSLT(left,right,"ltvop");
+		}
+		else if(!binop.compare(">=")){
+			val = Builder.CreateICmpSGE(left,right,"gteqop");
+		}
+		else if(!binop.compare("<=")){
+			val = Builder.CreateICmpSLE(left,right,"lteqop");
+		}
+		else if(!binop.compare("==")){
+			val = Builder.CreateICmpEQ(left,right,"eqop");
+		}
+		else if(!binop.compare("!=")){
+			val = Builder.CreateICmpNE(left,right,"neqop");
+		}
+		else if(!binop.compare("&&")){
+			val = Builder.CreateAnd(left,right,"andop");
+		}
+		else if(!binop.compare("||")){
+			val = Builder.CreateOr(left,right,"orop");			
+		}
+ 		return val;
  	}
 
  	virtual Value * Codegen(UnaryExprASTnode& node){
@@ -286,11 +334,12 @@ class codegenvisitor : public CodeGenvisitor
  	virtual Value * Codegen(StatementlistASTnode &node){
  		fprintf(stdout,"StatementlistASTnode\n");
 		vector<class StatementASTnode*> statements_list = node.getStatementsList();
+		Value * v = NULL;
 		for(int i=0; i< sz(statements_list) ;i++){
 			cout << i << " ";
-			statements_list[i]->codegen(*this);
+			v = statements_list[i]->codegen(*this);
 		}
- 		return NULL;
+ 		return v;
  	}
 
  	virtual Value * Codegen(BreakstatementASTnode &node){
@@ -313,8 +362,9 @@ class codegenvisitor : public CodeGenvisitor
 			var_decl_list[i]->codegen(*this);
 		}
 		class StatementlistASTnode * statements_list = node.getStatementsList();
-		statements_list->codegen(*this);
- 		return NULL;
+		cout << "BLOCKS" << endl;
+		Value * v = statements_list->codegen(*this);
+ 		return v;
  	}
 
  	virtual Value * Codegen(ForstatementASTnode &node){
@@ -373,7 +423,69 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(IfelseASTnode &node){
- 		return NULL;
+ 		cout << "IFELSENODE" << endl;
+		class ExprASTnode * cond = node.getCond();
+		// fprintf(stdout,"Condition\n");
+		Value *CondV = cond->codegen(*this);
+		if (!CondV){
+			printf("condnull\n");
+    		return nullptr;
+		}
+
+		class BlockstatementASTnode * ifstatement = node.getIfstatement();
+		// fprintf(stdout,"If statement\n");
+		// ifstatement->codegen(*this);
+		class BlockstatementASTnode * elsestatement = node.getElsestatement();
+		// elsestatement->codegen(*this);
+
+		/*if(elsestatement != NULL){
+			fprintf(stdout,"Else statement\n");
+		}*/
+
+		Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+		// Create blocks for the then and else cases.  Insert the 'then' block at the
+		// end of the function.
+		BasicBlock *ThenBB = BasicBlock::Create(mycontext, "then", TheFunction);
+		BasicBlock *ElseBB = BasicBlock::Create(mycontext, "else");
+		BasicBlock *MergeBB = BasicBlock::Create(mycontext, "ifcont");
+
+		Builder.CreateCondBr(CondV, ThenBB, ElseBB);
+		// Emit then value.
+  		Builder.SetInsertPoint(ThenBB);
+
+  		cout << "IF" << endl << endl;
+  		Value * ThenV = ifstatement->codegen(*this);
+
+  		// if (!ThenV){
+  		// 	cout << "NULL" << "HELLO" << endl;
+    // 		return nullptr;
+  		// }
+
+    	Builder.CreateBr(MergeBB);
+  		// Codegen of 'Then' can change the current block, update ThenBB for the PHI.
+  		ThenBB = Builder.GetInsertBlock();
+
+  		// Emit else block.
+  		TheFunction->getBasicBlockList().push_back(ElseBB);
+  		Builder.SetInsertPoint(ElseBB);
+  		Value * ElseV = elsestatement->codegen(*this);
+  		// if (!ElseV)
+    // 		return nullptr;
+
+    	Builder.CreateBr(MergeBB);
+  		// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
+  		ElseBB = Builder.GetInsertBlock();
+
+  		// Emit merge block.
+  		TheFunction->getBasicBlockList().push_back(MergeBB);
+  		Builder.SetInsertPoint(MergeBB);
+  		// PHINode *PN = Builder.CreatePHI(Type::getDoubleTy(mycontext), 2, "iftmp");
+
+  		// PN->addIncoming(ThenV, ThenBB);
+  		// PN->addIncoming(ElseV, ElseBB);
+  		Value *V = ConstantInt::get(mycontext, APInt(32, 0));
+		return V;
  	}
 
  	virtual Value * Codegen(LocationASTnode &node){

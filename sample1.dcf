@@ -5,13 +5,19 @@ class Program {
 
 		void main(){
 			int l,m;
-			m = 6;
+			m = 4;
+			if(m > 5){
+				m = 3;
+			}
+			else{
+				m = 2;
+			}
 			callout("printf","123");
 			callout("printf","223");
 			callout("printf","%d",5);
 			callout("printf","%d",m);
 		}
 	
-		void fun(boolean n,int m){
+		void fun(int n,int m){
 		}
 }
