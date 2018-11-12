@@ -334,7 +334,7 @@ class codegenvisitor : public CodeGenvisitor
  	virtual Value * Codegen(StatementlistASTnode &node){
  		fprintf(stdout,"StatementlistASTnode\n");
 		vector<class StatementASTnode*> statements_list = node.getStatementsList();
-		Value * v = NULL;
+		Value * v = ConstantInt::get(mycontext, APInt(32, 0));
 		for(int i=0; i< sz(statements_list) ;i++){
 			cout << i << " ";
 			v = statements_list[i]->codegen(*this);
@@ -425,7 +425,6 @@ class codegenvisitor : public CodeGenvisitor
  	virtual Value * Codegen(IfelseASTnode &node){
  		cout << "IFELSENODE" << endl;
 		class ExprASTnode * cond = node.getCond();
-		// fprintf(stdout,"Condition\n");
 		Value *CondV = cond->codegen(*this);
 		if (!CondV){
 			printf("condnull\n");
@@ -433,14 +432,7 @@ class codegenvisitor : public CodeGenvisitor
 		}
 
 		class BlockstatementASTnode * ifstatement = node.getIfstatement();
-		// fprintf(stdout,"If statement\n");
-		// ifstatement->codegen(*this);
 		class BlockstatementASTnode * elsestatement = node.getElsestatement();
-		// elsestatement->codegen(*this);
-
-		/*if(elsestatement != NULL){
-			fprintf(stdout,"Else statement\n");
-		}*/
 
 		Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -457,10 +449,10 @@ class codegenvisitor : public CodeGenvisitor
   		cout << "IF" << endl << endl;
   		Value * ThenV = ifstatement->codegen(*this);
 
-  		// if (!ThenV){
-  		// 	cout << "NULL" << "HELLO" << endl;
-    // 		return nullptr;
-  		// }
+  		if (!ThenV){
+  			cout << "NULL" << "HELLO" << endl;
+    		return nullptr;
+  		}
 
     	Builder.CreateBr(MergeBB);
   		// Codegen of 'Then' can change the current block, update ThenBB for the PHI.
@@ -470,8 +462,8 @@ class codegenvisitor : public CodeGenvisitor
   		TheFunction->getBasicBlockList().push_back(ElseBB);
   		Builder.SetInsertPoint(ElseBB);
   		Value * ElseV = elsestatement->codegen(*this);
-  		// if (!ElseV)
-    // 		return nullptr;
+  		if (!ElseV)
+    		return nullptr;
 
     	Builder.CreateBr(MergeBB);
   		// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
@@ -517,10 +509,10 @@ class codegenvisitor : public CodeGenvisitor
  		cout << op << endl;
 
  		if(op == "+="){
-    		val = Builder.CreateAdd(Builder.CreateLoad(cur,varname), val,"addEqualToTmp");
+    		val = Builder.CreateAdd(Builder.CreateLoad(cur,varname), val,"addEqop");
   		}
   		else if (op == "-="){
-    		val = Builder.CreateSub(Builder.CreateLoad(cur,varname), val,"subEqualToTmp");
+    		val = Builder.CreateSub(Builder.CreateLoad(cur,varname), val,"subEqop");
   		}
 
   		return Builder.CreateAlignedStore(val, cur, 4);
@@ -536,7 +528,24 @@ class codegenvisitor : public CodeGenvisitor
  	}
  	
  	virtual Value * Codegen(DefinedMethodASTnode &node){
- 		return NULL;
+		string method_name = node.getMethodName();
+		class MethodArgsASTnode* argslist = node.getArgsList();
+		vector<class ExprASTnode *> arguments_list = argslist->getArgumentsList();
+
+		Function * Func = Module_Ob->getFunction(method_name);
+		if(Func == NULL){
+			LogErrorV("Function not defined");
+		}
+
+		vector<Value* > args;
+		
+		for(int i=0; i< sz(arguments_list) ;i++){
+			Value * v = arguments_list[i]->codegen(*this);
+			args.push_back(v);
+		}
+
+ 		Value * v = Builder.CreateCall(Func,args);
+ 		return v;
  	}
  	
  	virtual Value * Codegen(CalloutargASTnode &node){
