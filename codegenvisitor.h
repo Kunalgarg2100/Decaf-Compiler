@@ -228,10 +228,16 @@ class codegenvisitor : public CodeGenvisitor
 		for(int i=0;i < sz(var_list);i++){
 			string var_name = var_list[i]->getId();
 			AllocaInst * alloca = CreateEntryBlockAlloca(TheFunction,var_name, datatype);
+			if(data_type == "int"){
   			alloca->setAlignment(4);
   			/* initializing variables to 0 */
   			Value * initval = ConstantInt::get(mycontext, APInt(32,0));
   			Builder.CreateAlignedStore(initval, alloca, 4);
+  		}
+  		else{
+  			Value * initval = ConstantInt::get(mycontext, APInt(1,0));
+  			Builder.CreateStore(initval, alloca);
+  		}
   			// Old_vals[var] = NamedValues[var];
     		Named_Values[var_name] = alloca;
 		}
@@ -307,21 +313,23 @@ class codegenvisitor : public CodeGenvisitor
   			Named_Values[argNames[Idx]] = alloca;
   			Idx++;
   		}
-  		Block->codegen(*this);
-    	Builder.CreateRet(NULL);
+  		Value * retval = Block->codegen(*this);
+  		// if(return_type == "void")
+    		// Builder.CreateRet(NULL);
 
-  		/*if (Value *RetVal = Block->codegen(*this)) {
-    		// Finish off the function.
-
-    		// Validate the generated code, checking for consistency.
-    		verifyFunction(*TheFunction);
-    		return TheFunction;
-  		}
-
-  		// Error reading body, remove function.
-  		TheFunction->eraseFromParent();*/
-  		return nullptr;
-
+  		if (retval) {
+  			if(return_type != "void"){
+				Builder.CreateRet(retval);
+			}
+			else {
+				Builder.CreateRet(NULL);
+			}
+		}
+		else
+			Builder.CreateRet(NULL);
+		
+		// verifyFunction(*TheFunction);
+    	return TheFunction;
  	}
 
  	virtual Value * Codegen(MethoddecllistASTnode &node){
@@ -352,7 +360,16 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(ReturnstatementASTnode &node){
- 		return NULL;
+ 		// Function * Func = Module_Ob->getFunction(method_name);
+ 		class ExprASTnode * expr = node.getExpr();
+ 		if(expr == NULL){
+ 			return NULL;
+ 		}
+
+ 		else{
+ 			Value * v = expr->codegen(*this);
+ 			return v;
+ 		}
  	}
 
  	virtual Value * Codegen(BlockstatementASTnode &node){
