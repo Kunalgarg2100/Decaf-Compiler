@@ -1,20 +1,12 @@
 class Program {
 	
-	int inp[110];
-
-	void main() {
-		int n;
-		n = 90;
-		initialize(n);
-		bubblesort(n);
-	}
-
+	int inp[100];
 	void initialize(int n){
 		int i;
-		for i=0, n-1 {
+		for i=0, n {
 			inp[i] = n - i;
 		}
-		for i=0, 10{
+		for i=0, n {
 			callout("printf","%d ",inp[i]);
 		}
 		callout("printf","\n");
@@ -24,7 +16,7 @@ class Program {
 	void bubblesort(int n){
 	 	int i;
 	 	int tmp;
-	 	for i=0, n-1 {
+	 	for i=0, n {
 			for j=0, n-i-1 {
 				if(inp[j] > inp[j+1]){
 					tmp = inp[j];
@@ -34,10 +26,16 @@ class Program {
 			}
 	 	}
 
-	 	for i=0, 10{
+	 	for i=0, n {
 			callout("printf","%d ",inp[i]);
 		}
 		callout("printf","\n");
 	}
 
+	void main() {
+		int n;
+		n = 10;
+		initialize(n);
+		bubblesort(n);
+	}
 }
