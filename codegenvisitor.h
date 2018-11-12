@@ -379,38 +379,56 @@ class codegenvisitor : public CodeGenvisitor
  		 // Emit the start code first, without 'variable' in scope.
   		class ExprASTnode * initial_cond = node.getInitialcond();
 		Value * StartVal = initial_cond->codegen(*this);
+		
+		class ExprASTnode * break_cond = node.getBreakcond();
+		Value * EndCond = break_cond->codegen(*this);
+
+		class BlockstatementASTnode * block = node.getBlockstatement();
+
 		if (!StartVal){
 		    return nullptr;
 		}
+
+		if (!EndCond){
+    		return nullptr;
+		}
+
 		// Store the value into the alloca.
   		Builder.CreateAlignedStore(StartVal, Alloca, 4);
 
-  		// Make the new basic block for the loop header, inserting after current block
+		// Make the new basic block for the loop header, inserting after current block
+  		BasicBlock *pre_header_basic_block = Builder.GetInsertBlock();
   		BasicBlock *LoopBB = BasicBlock::Create(mycontext, "loop", TheFunction);
-  		
+
   		// Insert an explicit fall through from the current block to the LoopBB.
   		Builder.CreateBr(LoopBB);
 
   		// Start insertion in LoopBB.
   		Builder.SetInsertPoint(LoopBB);
 
-		//Setting step value of variable to 1
+  		PHINode * Variable = Builder.CreatePHI(Type::getInt32Ty(mycontext), 2, varName);
+  		Variable->addIncoming(StartVal, pre_header_basic_block);
+
+  		// Within the loop, the variable is defined equal to the PHI node.  If it
+  		// shadows an existing variable, we have to restore it, so save it now.
+  		AllocaInst *OldVal = Named_Values[varName];
+  		Named_Values[varName] = Alloca;
+
+  		block->codegen(*this);
+  		
+  		//Setting step value of variable to 1
 		Value * StepVal = ConstantInt::get(mycontext,APInt(32,1));
 
 		// Reload, increment, and restore the alloca.  This handles the case where
   		// the body of the loop mutates the variable.
   		Value * CurVar = Builder.CreateAlignedLoad(Alloca, 4, varName);
-  		Value * NextVar = Builder.CreateFAdd(CurVar, StepVal, "nextvar");
+  		Value * NextVar = Builder.CreateAdd(CurVar, StepVal, "nextvar");
+
   		Builder.CreateAlignedStore(NextVar, Alloca, 4);
 
-  		class ExprASTnode * break_cond = node.getBreakcond();
-		Value * EndCond = break_cond->codegen(*this);
-		if (!EndCond){
-    		return nullptr;
-		}
-		EndCond = Builder.CreateICmpSLT(NextVar, EndCond , "loopcondition");
-		
-		// Create the "after loop" block and insert it.
+		EndCond = Builder.CreateICmpSLT(NextVar, EndCond , "loopcondition");		
+		BasicBlock *LoopEndBB = Builder.GetInsertBlock();
+		  		// Create the "after loop" block and insert it.
   		BasicBlock *AfterBB = BasicBlock::Create(mycontext, "afterloop", TheFunction);
 
   		// Insert the conditional branch into the end of LoopEndBB.
@@ -419,7 +437,16 @@ class codegenvisitor : public CodeGenvisitor
   		// Any new code will be inserted in AfterBB.
   		Builder.SetInsertPoint(AfterBB);
 
- 		return NULL;
+  		// Restore the unshadowed variable.
+  		if (OldVal)
+    		Named_Values[varName] = OldVal;
+  		else
+    		Named_Values.erase(varName);
+
+  		// Add a new entry to the PHI node for the backedge.
+  		Variable->addIncoming(NextVar, LoopEndBB);
+
+ 		return ConstantInt::get(mycontext, APInt(32,0));
  	}
 
  	virtual Value * Codegen(IfelseASTnode &node){
