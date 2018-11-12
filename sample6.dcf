@@ -1,0 +1,23 @@
+class Program{
+	int num(int a){
+		return a;
+	}
+	
+	int func(int n){
+		int sum;
+		sum = 0;
+		for i=1, n+1 {
+			sum += num(i);
+			callout("printf","i is %d | sum is %d\n",i,sum);
+		}
+		return sum;
+	}
+	
+	void main(){
+		int n, ans;
+		n = 50;
+		ans = func(n);
+		callout("printf","ans is %d\n",ans);
+	}
+
+}
