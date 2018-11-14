@@ -1,0 +1,88 @@
+ProgramASTnode
+FielddecllistASTnode
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = void
+<methodname = fib
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = x
+IdtypeASTnode
+datatype = int
+var_name = y
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = x
+IntLitExprASTnode
+<integer value = "1">
+binop is ==
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = y
+<operator = +=
+IntLitExprASTnode
+<integer value = "1">
+Else statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = y
+<operator = +=
+IntLitExprASTnode
+<integer value = "1">
+DefinedMethodASTnode
+defined method name = fib
+MethodArgsASTnode
+BinaryExprASTnode
+LocationASTnode
+<varname = x
+IntLitExprASTnode
+<integer value = "1">
+binop is -
+LocationASTnode
+<varname = y
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = fib is %d\n
+ExprargASTnode
+LocationASTnode
+<varname = y
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = y >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = y
+<operator = =
+IntLitExprASTnode
+<integer value = "0">
+DefinedMethodASTnode
+defined method name = fib
+MethodArgsASTnode
+IntLitExprASTnode
+<integer value = "10">
+LocationASTnode
+<varname = y

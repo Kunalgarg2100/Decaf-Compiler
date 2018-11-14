@@ -1,0 +1,234 @@
+ProgramASTnode
+FielddecllistASTnode
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = inp , size = 100 >
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = void
+<methodname = initialize
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = i >
+StatementlistASTnode
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+LocationASTnode
+<varname = n
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = inp
+LocationASTnode
+<varname = i
+<operator = =
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+LocationASTnode
+<varname = i
+binop is -
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+LocationASTnode
+<varname = n
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d 
+ExprargASTnode
+LocationASTnode
+<varname = inp
+LocationASTnode
+<varname = i
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = \n
+MethoddeclASTnode
+<returntype = void
+<methodname = bubblesort
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = i >
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = tmp >
+StatementlistASTnode
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+LocationASTnode
+<varname = n
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+ForstatementASTnode
+<varname = j
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+BinaryExprASTnode
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+LocationASTnode
+<varname = i
+binop is -
+IntLitExprASTnode
+<integer value = "1">
+binop is -
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = inp
+LocationASTnode
+<varname = j
+LocationASTnode
+<varname = inp
+BinaryExprASTnode
+LocationASTnode
+<varname = j
+IntLitExprASTnode
+<integer value = "1">
+binop is +
+binop is >
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = tmp
+<operator = =
+LocationASTnode
+<varname = inp
+LocationASTnode
+<varname = j
+AssignstatementASTnode
+LocationASTnode
+<varname = inp
+LocationASTnode
+<varname = j
+<operator = =
+LocationASTnode
+<varname = inp
+BinaryExprASTnode
+LocationASTnode
+<varname = j
+IntLitExprASTnode
+<integer value = "1">
+binop is +
+AssignstatementASTnode
+LocationASTnode
+<varname = inp
+BinaryExprASTnode
+LocationASTnode
+<varname = j
+IntLitExprASTnode
+<integer value = "1">
+binop is +
+<operator = =
+LocationASTnode
+<varname = tmp
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+LocationASTnode
+<varname = n
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d 
+ExprargASTnode
+LocationASTnode
+<varname = inp
+LocationASTnode
+<varname = i
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = \n
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = n >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = n
+<operator = =
+IntLitExprASTnode
+<integer value = "10">
+DefinedMethodASTnode
+defined method name = initialize
+MethodArgsASTnode
+LocationASTnode
+<varname = n
+DefinedMethodASTnode
+defined method name = bubblesort
+MethodArgsASTnode
+LocationASTnode
+<varname = n

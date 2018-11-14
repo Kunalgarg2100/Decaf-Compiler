@@ -3,7 +3,7 @@ class Program {
 		int k[5],p;
 
 		void fun(int n,int m){
-			callout("printf","%d",m);
+			callout("printf","%d\n",m);
 		}
 
 		void main(){
@@ -11,10 +11,10 @@ class Program {
 			m = 6;
 			m += 1000;
 			m = -6;
-			callout("printf","123");
-			callout("printf","223");
+			callout("printf","123\n");
+			callout("printf","223\n");
 			fun(2,4);
-			callout("printf","%d",5);
-			callout("printf","%d",m);
+			callout("printf","%d\n",5);
+			callout("printf","%d\n",m);
 		}
 }

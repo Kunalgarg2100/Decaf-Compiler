@@ -1,0 +1,134 @@
+ProgramASTnode
+FielddecllistASTnode
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = sum >
+IdASTnode
+<id = n >
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = k , size = 5 >
+IdASTnode
+<id = p >
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = x >
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = int
+<methodname = fun
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+IdtypeASTnode
+datatype = int
+var_name = m
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = l >
+IdASTnode
+<id = m >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "6">
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = m
+IntLitExprASTnode
+<integer value = "5">
+binop is >
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "3">
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = m
+IntLitExprASTnode
+<integer value = "4">
+binop is >
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "1">
+Else statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "12">
+Else statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "2">
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = 123\n
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = 223\n
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d\n
+ExprargASTnode
+IntLitExprASTnode
+<integer value = "5">
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d\n
+ExprargASTnode
+LocationASTnode
+<varname = m

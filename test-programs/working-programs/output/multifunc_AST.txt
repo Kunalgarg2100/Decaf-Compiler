@@ -1,0 +1,102 @@
+ProgramASTnode
+FielddecllistASTnode
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = sum >
+IdASTnode
+<id = n >
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = k , size = 5 >
+IdASTnode
+<id = p >
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = void
+<methodname = fun
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+IdtypeASTnode
+datatype = int
+var_name = m
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d\n
+ExprargASTnode
+LocationASTnode
+<varname = m
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = l >
+IdASTnode
+<id = m >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "6">
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = +=
+IntLitExprASTnode
+<integer value = "1000">
+AssignstatementASTnode
+LocationASTnode
+<varname = m
+<operator = =
+IntLitExprASTnode
+<integer value = "6">
+unary_operator is -
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = 123\n
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = 223\n
+DefinedMethodASTnode
+defined method name = fun
+MethodArgsASTnode
+IntLitExprASTnode
+<integer value = "2">
+IntLitExprASTnode
+<integer value = "4">
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d\n
+ExprargASTnode
+IntLitExprASTnode
+<integer value = "5">
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d\n
+ExprargASTnode
+LocationASTnode
+<varname = m

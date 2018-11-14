@@ -1,0 +1,262 @@
+ProgramASTnode
+FielddecllistASTnode
+FielddeclASTnode
+VarlistASTnode
+IdASTnode
+<id = arr , size = 110 >
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = void
+<methodname = initialize
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+IntLitExprASTnode
+<integer value = "1">
+binop is -
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+<operator = =
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+LocationASTnode
+<varname = i
+binop is -
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+IntLitExprASTnode
+<integer value = "10">
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d 
+ExprargASTnode
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = \n
+MethoddeclASTnode
+<returntype = void
+<methodname = nextMax
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = max1 >
+IdASTnode
+<id = max2 >
+StatementlistASTnode
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+IntLitExprASTnode
+<integer value = "2">
+binop is <
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = Invalid Input
+AssignstatementASTnode
+LocationASTnode
+<varname = max1
+<operator = =
+IntLitExprASTnode
+<integer value = "1">
+unary_operator is -
+AssignstatementASTnode
+LocationASTnode
+<varname = max2
+<operator = =
+IntLitExprASTnode
+<integer value = "1">
+unary_operator is -
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "0">
+Break condn
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+IntLitExprASTnode
+<integer value = "1">
+binop is -
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+LocationASTnode
+<varname = max1
+binop is >
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = max2
+<operator = =
+LocationASTnode
+<varname = max1
+AssignstatementASTnode
+LocationASTnode
+<varname = max1
+<operator = =
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+Else statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+LocationASTnode
+<varname = max2
+binop is >
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+LocationASTnode
+<varname = max1
+binop is !=
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = max2
+<operator = =
+LocationASTnode
+<varname = arr
+LocationASTnode
+<varname = i
+IfelseASTnode
+Condition
+BinaryExprASTnode
+LocationASTnode
+<varname = max2
+IntLitExprASTnode
+<integer value = "1">
+unary_operator is -
+binop is ==
+If statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = No second largest element
+Else statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = Second Largest element is %d
+ExprargASTnode
+LocationASTnode
+<varname = max2
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = n >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = n
+<operator = =
+IntLitExprASTnode
+<integer value = "100">
+DefinedMethodASTnode
+defined method name = initialize
+MethodArgsASTnode
+LocationASTnode
+<varname = n
+DefinedMethodASTnode
+defined method name = nextMax
+MethodArgsASTnode
+LocationASTnode
+<varname = n

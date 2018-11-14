@@ -14,7 +14,7 @@ class Program{
 
 	void main(){
 		int n, ans;
-		n = 50;
+		n = 100;
 		ans = func(n);
 		callout("printf","ans is %d\n",ans);
 	}

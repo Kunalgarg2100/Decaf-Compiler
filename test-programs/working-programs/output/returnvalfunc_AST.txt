@@ -1,0 +1,102 @@
+ProgramASTnode
+FielddecllistASTnode
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = int
+<methodname = num
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = a
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+ReturnstatementASTnode
+LocationASTnode
+<varname = a
+MethoddeclASTnode
+<returntype = int
+<methodname = func
+IdtypelistASTnode
+IdtypeASTnode
+datatype = int
+var_name = n
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = sum >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = sum
+<operator = =
+IntLitExprASTnode
+<integer value = "0">
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "1">
+Break condn
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+IntLitExprASTnode
+<integer value = "1">
+binop is +
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = sum
+<operator = +=
+DefinedMethodASTnode
+defined method name = num
+MethodArgsASTnode
+LocationASTnode
+<varname = i
+ReturnstatementASTnode
+LocationASTnode
+<varname = sum
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = n >
+IdASTnode
+<id = ans >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = n
+<operator = =
+IntLitExprASTnode
+<integer value = "100">
+AssignstatementASTnode
+LocationASTnode
+<varname = ans
+<operator = =
+DefinedMethodASTnode
+defined method name = func
+MethodArgsASTnode
+LocationASTnode
+<varname = n
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = ans is %d\n
+ExprargASTnode
+LocationASTnode
+<varname = ans

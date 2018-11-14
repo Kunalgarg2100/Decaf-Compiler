@@ -1,0 +1,63 @@
+ProgramASTnode
+FielddecllistASTnode
+MethoddecllistASTnode
+MethoddeclASTnode
+<returntype = void
+<methodname = main
+IdtypelistASTnode
+BlockstatementASTnode
+VardecllistASTnode
+VardeclASTnode
+<datatype = int
+IdlistASTnode
+IdASTnode
+<id = sum >
+IdASTnode
+<id = n >
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = n
+<operator = =
+IntLitExprASTnode
+<integer value = "100">
+AssignstatementASTnode
+LocationASTnode
+<varname = sum
+<operator = =
+IntLitExprASTnode
+<integer value = "0">
+ForstatementASTnode
+<varname = i
+Initial condn
+IntLitExprASTnode
+<integer value = "1">
+Break condn
+BinaryExprASTnode
+LocationASTnode
+<varname = n
+IntLitExprASTnode
+<integer value = "1">
+binop is +
+Block statement
+BlockstatementASTnode
+VardecllistASTnode
+StatementlistASTnode
+AssignstatementASTnode
+LocationASTnode
+<varname = sum
+<operator = =
+BinaryExprASTnode
+LocationASTnode
+<varname = sum
+LocationASTnode
+<varname = i
+binop is +
+CalloutMethodASTnode
+<call out methodname = printf
+CalloutArgsASTnode
+StringargASTnode
+<string arg = %d
+ExprargASTnode
+LocationASTnode
+<varname = sum

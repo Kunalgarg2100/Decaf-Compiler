@@ -23,10 +23,10 @@ class Program {
 			else{
 				m = 2;
 			}
-			callout("printf","123");
-			callout("printf","223");
-			callout("printf","%d",5);
-			callout("printf","%d",m);
+			callout("printf","123\n");
+			callout("printf","223\n");
+			callout("printf","%d\n",5);
+			callout("printf","%d\n",m);
 		}
 	
 }
