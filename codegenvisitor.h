@@ -57,7 +57,7 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(BinaryExprASTnode& node){
- 		cout << "BINARY" << endl;
+ 		// cout << "BINARY" << endl;
  		ExprASTnode * leftexpr = node.getLeft();
 		ExprASTnode * rightexpr = node.getRight();
 		string binop = node.getOp();
@@ -70,7 +70,7 @@ class codegenvisitor : public CodeGenvisitor
     		val = Builder.CreateAdd(left,right,"addop");
 		}
 		else if(!binop.compare("-")){
-			cout << "NE -" << endl;
+			// cout << "NE -" << endl;
 			val = Builder.CreateSub(left,right,"subop");
 		}
 		else if(!binop.compare("%")){
@@ -126,8 +126,8 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(IntLitExprASTnode& node){
-		fprintf(stdout,"IntLitExprASTnode\n");		
- 		cout << node.getIntLit() << endl;
+		// fprintf(stdout,"IntLitExprASTnode\n");		
+ 		// cout << node.getIntLit() << endl;
  		return ConstantInt::get(mycontext, APInt(32,node.getIntLit()));
  	}
 
@@ -148,12 +148,12 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(IdASTnode& node, Type * datatype){
- 		fprintf(stdout,"IdASTnode\n");
+ 		// fprintf(stdout,"IdASTnode\n");
 		int array_size = node.getSize();
 		string var_name = node.getId().c_str();
 		if(array_size == -1) {
-			fprintf(stdout, "<id = %s >\n" ,var_name.c_str());
-			cout << datatype << endl;
+			// fprintf(stdout, "<id = %s >\n" ,var_name.c_str());
+			// cout << datatype << endl;
 			GlobalVariable * var = new GlobalVariable(*Module_Ob, datatype, false, GlobalValue::CommonLinkage, 0, var_name);
 			var->setInitializer(ConstantInt::get(datatype, 0, true)); 
 		}
@@ -170,7 +170,7 @@ class codegenvisitor : public CodeGenvisitor
  	
 
 	virtual Value * Codegen(VarlistASTnode& node, Type * datatype){
-		fprintf(stdout,"VarlistASTnode\n");
+		// fprintf(stdout,"VarlistASTnode\n");
 		vector<class IdASTnode*> var_names = node.getVarList();
 		for(uint i=0; i< var_names.size();i++)
 			var_names[i]->codegen(*this, datatype);
@@ -179,7 +179,7 @@ class codegenvisitor : public CodeGenvisitor
 	}
 
 	virtual Value * Codegen(FielddeclASTnode& node){
- 		fprintf(stdout,"FielddeclASTnode\n");
+ 		// fprintf(stdout,"FielddeclASTnode\n");
  		Type * datatype;
 		string data_type = node.getdataType().c_str();
 		if(data_type == "int")
@@ -196,7 +196,7 @@ class codegenvisitor : public CodeGenvisitor
 	}
 
  	virtual Value * Codegen(FielddecllistASTnode& node){
- 		fprintf(stdout,"FielddecllistASTnode\n");
+ 		// fprintf(stdout,"FielddecllistASTnode\n");
 		vector<class FielddeclASTnode*> field_decl_list = node.getFielddeclList();
 		for(uint i=0; i<field_decl_list.size();i++)
 			field_decl_list[i]->codegen(*this);
@@ -209,7 +209,7 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(VardeclASTnode &node){
-		fprintf(stdout,"VardeclASTnode\n");
+		// fprintf(stdout,"VardeclASTnode\n");
 		/* https://llvm.org/docs/tutorial/LangImpl05.html */
 		/* The first line gets the current Function object that is being built. It gets this by asking the 
 		builder for the current BasicBlock, and asking that block for its “parent” (the function it is currently embedded into).*/
@@ -249,7 +249,7 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(MethoddeclASTnode &node){
- 		fprintf(stdout,"MethoddeclASTnode\n");
+ 		// fprintf(stdout,"MethoddeclASTnode\n");
 		// fprintf(stdout,"<returntype = %s\n",);
 		string methodName = node.getId().c_str();
 		class BlockstatementASTnode * Block = node.getBlock();
@@ -265,8 +265,8 @@ class codegenvisitor : public CodeGenvisitor
 		else
 			LogErrorV("Invalid return type");
 
-		fprintf(stdout,"<returntype = %s\n", methodName.c_str());
-		fprintf(stdout,"<methodname = %s\n", return_type.c_str());
+		// fprintf(stdout,"<returntype = %s\n", methodName.c_str());
+		// fprintf(stdout,"<methodname = %s\n", return_type.c_str());
 		
 		vector<Type*> argTypes;
 		vector<string> argNames;
@@ -278,7 +278,7 @@ class codegenvisitor : public CodeGenvisitor
 			Type * datatype;
 			string data_type = var_list[i]->getType().c_str();
 			string var_name = var_list[i]->getId().c_str();
-			cout << var_name << endl;
+			// cout << var_name << endl;
 			if(data_type == "int")
 		 		datatype = Type::getInt32Ty(mycontext);
 			else if (data_type == "boolean")
@@ -309,7 +309,7 @@ class codegenvisitor : public CodeGenvisitor
   			AllocaInst * alloca = CreateEntryBlockAlloca(TheFunction, argNames[Idx], argTypes[Idx]);
   			alloca->setAlignment(4);
   			Builder.CreateAlignedStore(&Arg, alloca, 4);
-  			cout << Idx << argNames[Idx] << endl;
+  			// cout << Idx << argNames[Idx] << endl;
   			Named_Values[argNames[Idx]] = alloca;
   			Idx++;
   		}
@@ -333,7 +333,7 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(MethoddecllistASTnode &node){
- 		fprintf(stdout,"MethoddecllistASTnode\n");
+ 		// fprintf(stdout,"MethoddecllistASTnode\n");
  		vector<class MethoddeclASTnode *> method_decl_list = node.getMethoddeclList();
 		for(int i=0; i< sz(method_decl_list) ;i++)
 			method_decl_list[i]->codegen(*this);
@@ -341,11 +341,11 @@ class codegenvisitor : public CodeGenvisitor
  	}
  	
  	virtual Value * Codegen(StatementlistASTnode &node){
- 		fprintf(stdout,"StatementlistASTnode\n");
+ 		// fprintf(stdout,"StatementlistASTnode\n");
 		vector<class StatementASTnode*> statements_list = node.getStatementsList();
 		Value * v = ConstantInt::get(mycontext, APInt(32, 0));
 		for(int i=0; i< sz(statements_list) ;i++){
-			cout << i << " ";
+			// cout << i << " ";
 			v = statements_list[i]->codegen(*this);
 		}
  		return v;
@@ -373,21 +373,21 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(BlockstatementASTnode &node){
- 		fprintf(stdout,"BlockstatementASTnode\n");
+ 		// fprintf(stdout,"BlockstatementASTnode\n");
 		class VardecllistASTnode * vardecllist = node.getVardeclList();
 		vector<class VardeclASTnode *> var_decl_list = vardecllist->getVardeclList();
 		for(int i=0; i< sz(var_decl_list) ;i++){
 			var_decl_list[i]->codegen(*this);
 		}
 		class StatementlistASTnode * statements_list = node.getStatementsList();
-		cout << "BLOCKS" << endl;
+		// cout << "BLOCKS" << endl;
 		Value * v = statements_list->codegen(*this);
  		return v;
  	}
 
  	virtual Value * Codegen(ForstatementASTnode &node){
  		/*https://llvm.org/docs/tutorial/LangImpl07.html#id1*/
- 		cout << "ForstatementASTnode" << endl;
+ 		// cout << "ForstatementASTnode" << endl;
  		string varName = node.getId().c_str();
  		Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
@@ -468,11 +468,11 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(IfelseASTnode &node){
- 		cout << "IFELSENODE" << endl;
+ 		// cout << "IFELSENODE" << endl;
 		class ExprASTnode * cond = node.getCond();
 		Value *CondV = cond->codegen(*this);
 		if (!CondV){
-			printf("condnull\n");
+			// printf("condnull\n");
     		return nullptr;
 		}
 
@@ -491,11 +491,11 @@ class codegenvisitor : public CodeGenvisitor
 		// Emit then value.
   		Builder.SetInsertPoint(ThenBB);
 
-  		cout << "IF" << endl << endl;
+  		// cout << "IF" << endl << endl;
   		Value * ThenV = ifstatement->codegen(*this);
 
   		if (!ThenV){
-  			cout << "NULL" << "HELLO" << endl;
+  			// cout << "NULL" << "HELLO" << endl;
     		return nullptr;
   		}
 
@@ -531,7 +531,7 @@ class codegenvisitor : public CodeGenvisitor
 
  	virtual Value * Codegen(LocationASTnode &node){
  		string varname = node.getId();
- 		cout << varname << '\n';
+ 		// cout << varname << '\n';
  		Value* v = Named_Values[varname];
  		if(!v){
  			v = Module_Ob->getNamedGlobal(varname);
@@ -541,18 +541,18 @@ class codegenvisitor : public CodeGenvisitor
  		}
 		class ExprASTnode * expr = node.getExpr();
 		if(expr == NULL){
- 			cout << "LOC2" << endl;
+ 			// cout << "LOC2" << endl;
 			v = Builder.CreateLoad(v);
 			return v;
 		}
 		else{
- 			cout << "LOC1" << endl;
+ 			// cout << "LOC1" << endl;
 
 			Value * pos = expr->codegen(*this);
 
-			cout << "SFSF" << endl;
+			// cout << "SFSF" << endl;
 			if(!pos) {
-				cout << "pro" << endl;
+				// cout << "pro" << endl;
 				return NULL;
 			}
 			vector<Value*> indices;
@@ -596,7 +596,7 @@ class codegenvisitor : public CodeGenvisitor
  		// class ExprASTnode * expr = node.getExpr();
   		// cout << "DSDFSD";
  		string op = node.getOp();
- 		cout << op << endl;
+ 		// cout << op << endl;
 
  		if(op == "+="){
     		val = Builder.CreateAdd(Builder.CreateLoad(cur,varname), val,"addEqop");
@@ -649,7 +649,7 @@ class codegenvisitor : public CodeGenvisitor
  	
  	virtual Value * Codegen(StringargASTnode &node){
  		string argument =  node.getArgument();
- 		cout << "arg" << argument <<endl;
+ 		// cout << "arg" << argument <<endl;
  		Value * v = Builder.CreateGlobalStringPtr(argument);
  		return v;
  	}
@@ -660,7 +660,7 @@ class codegenvisitor : public CodeGenvisitor
  	
  	virtual Value * Codegen(CalloutMethodASTnode &node){
  		string method_name = node.getMethodName();
- 		cout << "m" << method_name << endl;
+ 		// cout << "m" << method_name << endl;
  		class CalloutArgsASTnode * arglist = node.getArgsList();
  		vector<class CalloutargASTnode *> arguments_list = arglist->getArgumentsList();
 
@@ -681,13 +681,15 @@ class codegenvisitor : public CodeGenvisitor
  	}
 
  	virtual Value * Codegen(ProgramASTnode& node){
- 		fprintf(stdout,"ProgramASTnode\n");
+ 		// fprintf(stdout,"ProgramASTnode\n");
 		class FielddecllistASTnode* field_decl_list = node.getFielddeclList();
 		class MethoddecllistASTnode* method_decl_list = node.getMethoddeclList();
 		field_decl_list->codegen(*this);
 		if(method_decl_list != NULL)
 			method_decl_list->codegen(*this);
+		freopen ("IR_output.txt","w",stderr);
 		Module_Ob->print(llvm::errs(), nullptr);
+		fclose (stdout);
  		return NULL;
  	}
 };

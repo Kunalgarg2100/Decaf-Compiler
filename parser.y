@@ -90,9 +90,9 @@ ProgramASTnode * rootnode;
 
 %%
 program : CLASS PROGRAM COB field_decl_list method_decl_list CCB
-		{ $$ = new ProgramASTnode($4, $5); rootnode = $$; printf("Program Parsed successfully");}
+		{ $$ = new ProgramASTnode($4, $5); rootnode = $$; }
 		| CLASS PROGRAM COB field_decl_list CCB
-		{ $$ = new ProgramASTnode($4, NULL); rootnode = $$; printf("Program Parsed successfully");}
+		{ $$ = new ProgramASTnode($4, NULL); rootnode = $$; }
 ;
 //field_decl_list : field_decl field_decl_list (not working)
 field_decl_list : field_decl_list field_decl { $$->push_fielddecl($2); }
@@ -113,7 +113,7 @@ method_decl_list : method_decl_list method_decl { $1->push_methoddecl($2); $$ = 
 		 | method_decl { $$ = new MethoddecllistASTnode(); $$->push_methoddecl($1);}
 		 ;
 method_decl : DATA_TYPE ID OB arg_list CB block { $$ = new MethoddeclASTnode(string($1), $2, $4, $6); }
-	    | VOID ID OB arg_list CB block { cout << string($1) << endl; $$ = new MethoddeclASTnode(string($1), $2, $4, $6); }
+	    | VOID ID OB arg_list CB block { $$ = new MethoddeclASTnode(string($1), $2, $4, $6); }
 	    ;
 arg_list : DATA_TYPE ID arg_single { $3->push_idtype(new IdtypeASTnode(string($1),$2)); $$ = $3; }
 	 | %empty  { $$ = new IdtypelistASTnode(); }
@@ -133,8 +133,8 @@ var_list : ID { $$ = new IdlistASTnode(); $$->push_id(new IdASTnode(string($1)))
 statement_list : statement_list statement { $1-> push_statement($2); $$ = $1; }
 	       | %empty { $$ =  new StatementlistASTnode(); }
 	       ;
-statement : location assign_op expr SEMICOLON { cout <<"asignm" << endl; $$ = new AssignstatementASTnode($1, string($2), $3); }
-	  | method_call SEMICOLON { cout << "method_call" << endl; $$ = $1; }
+statement : location assign_op expr SEMICOLON { $$ = new AssignstatementASTnode($1, string($2), $3); }
+	  | method_call SEMICOLON { $$ = $1; }
 	  | IF OB expr CB block { $$ = new IfelseASTnode($5, $3, NULL); }
 	  | IF OB expr CB block ELSE block { $$ = new IfelseASTnode($5, $3, $7); }
 	  | FOR ID EQ expr COMMA expr block { $$ = new ForstatementASTnode(string($2), $4, $6, $7); }
@@ -151,7 +151,7 @@ assign_op : EQ
 	  | PLUSEQ
 	  | MINUSEQ
 	  ;
-method_call : method_name OB method_args CB { cout <<"derived methid call" << endl; $$ = new DefinedMethodASTnode(string($1), $3); }
+method_call : method_name OB method_args CB { $$ = new DefinedMethodASTnode(string($1), $3); }
 	    | CALLOUT OB STRING COMMA callout_args_list CB { $$ = new CalloutMethodASTnode(string($3), $5);}
 	    ;
 method_name : ID
@@ -201,12 +201,19 @@ literal : INTEGER_LITERAL { $$ = new IntLitExprASTnode($1); }
 %%
 int main(int argc, char **argv)
 {
+  printf("Program Parsing Started\n");
   yyparse();
-  printf("\nParsing Completed\n");
+  printf("Program Parsed successfully\n");
+
+  printf("Generating AST\n");
   class visitor v;
   rootnode->accept(v);
+  printf("AST generated\n");
+
+  printf("Started IR Generation\n");
   class codegenvisitor v1;
   rootnode->codegen(v1);
+  printf("IR Generated successfully\n");
   return 0;
 }
 

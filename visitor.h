@@ -6,6 +6,8 @@
 #define sz(a) (int)a.size()
 using namespace std;
 
+FILE * ASToutfile = fopen("AST_output.txt", "w+");
+
 class visitor : public ASTvisitor
 {
 public:
@@ -14,24 +16,24 @@ public:
 	}
 
 	virtual void visit(ExprASTnode& node){
-		fprintf(stdout,"ExprASTnode\n");
+		fprintf(ASToutfile,"ExprASTnode\n");
 	}
 
 	virtual void visit(BinaryExprASTnode& node){
-		fprintf(stdout,"BinaryExprASTnode\n");
+		fprintf(ASToutfile,"BinaryExprASTnode\n");
 		ExprASTnode * left = node.getLeft();
 		ExprASTnode * right = node.getRight();
 		string binop = node.getOp();
 		left->accept(*this);
 		right->accept(*this);
-		fprintf(stdout,"binop is %s\n",binop.c_str());
+		fprintf(ASToutfile,"binop is %s\n",binop.c_str());
 	}
 	
 	virtual void visit(UnaryExprASTnode& node){
 		ExprASTnode * expr = node.getExpr();
 		expr->accept(*this);
 		string unary_operator = node.getOp();
-		fprintf(stdout,"unary_operator is %s\n",unary_operator.c_str());
+		fprintf(ASToutfile,"unary_operator is %s\n",unary_operator.c_str());
 	}
 
 	virtual void visit(LitExprASTnode& node){
@@ -39,87 +41,89 @@ public:
 	}
 	
 	virtual void visit(IntLitExprASTnode& node){
-		fprintf(stdout,"IntLitExprASTnode\n");		
-		cout << "<integer value = \"" <<  node.getIntLit() << "\" >" << endl;
+		fprintf(ASToutfile,"IntLitExprASTnode\n");		
+		fprintf(ASToutfile,"<integer value = \"%d\">\n",node.getIntLit());
 	}
 
 	virtual void visit(BoolLitExprASTnode& node){
-		cout << "<boolean value = \"" <<  node.getBoolLit() << "\" >" << endl;
+		fprintf(ASToutfile,"BoolLitExprASTnode\n");
+		fprintf(ASToutfile,"<boolean value = \"%s\">\n",node.getBoolLit().c_str());
 	}
 
 	virtual void visit(CharLitExprASTnode& node){
-		cout << "<char value = \"" <<  node.getCharLit() << "\" >" << endl;
+		fprintf(ASToutfile,"CharLitExprASTnode\n");
+		fprintf(ASToutfile,"<char value = \"%c\">\n",node.getCharLit());
 	}
 
 	virtual void visit(IdASTnode& node){
-		fprintf(stdout,"IdASTnode\n");
+		fprintf(ASToutfile,"IdASTnode\n");
 		int array_size = node.getSize();
 		string var_name = node.getId();
 		if(array_size == -1){
-			fprintf(stdout, "<id = %s >\n" ,var_name.c_str());
+			fprintf(ASToutfile, "<id = %s >\n" ,var_name.c_str());
 		}
 		else
-			fprintf(stdout, "<id = %s , size = %d >\n", var_name.c_str(), array_size);
+			fprintf(ASToutfile, "<id = %s , size = %d >\n", var_name.c_str(), array_size);
 	}
 
 	virtual void visit(IdtypeASTnode& node){
-		fprintf(stdout,"IdtypeASTnode\n");
-		fprintf(stdout,"datatype = %s\n", node.getType().c_str());
-		fprintf(stdout,"var_name = %s\n", node.getId().c_str());
+		fprintf(ASToutfile,"IdtypeASTnode\n");
+		fprintf(ASToutfile,"datatype = %s\n", node.getType().c_str());
+		fprintf(ASToutfile,"var_name = %s\n", node.getId().c_str());
 	}
 
 	virtual void visit(VarlistASTnode& node){
-		fprintf(stdout,"VarlistASTnode\n");
+		fprintf(ASToutfile,"VarlistASTnode\n");
 		vector<class IdASTnode*> var_names = node.getVarList();
 		for(uint i=0; i< var_names.size();i++)
 			var_names[i]->accept(*this);
 	}
 
 	virtual void visit(FielddeclASTnode& node){
-		fprintf(stdout,"FielddeclASTnode\n");
+		fprintf(ASToutfile,"FielddeclASTnode\n");
 		class VarlistASTnode * var_names = node.getVarList();
 		var_names->accept(*this);
 	}
 
 	virtual void visit(FielddecllistASTnode& node){
-		fprintf(stdout,"FielddecllistASTnode\n");
+		fprintf(ASToutfile,"FielddecllistASTnode\n");
 		vector<class FielddeclASTnode*> field_decl_list = node.getFielddeclList();
 		for(uint i=0; i<field_decl_list.size();i++)
 			field_decl_list[i]->accept(*this);
 	}
 
 	virtual void visit(IdlistASTnode& node){
-		fprintf(stdout,"IdlistASTnode\n");
+		fprintf(ASToutfile,"IdlistASTnode\n");
 		vector<class IdASTnode*> var_list = node.getIdlist();
 		for(uint i=0; i<var_list.size();i++)
 			var_list[i]->accept(*this);
 	}
 
 	virtual void visit(IdtypelistASTnode& node){
-		fprintf(stdout,"IdtypelistASTnode\n");
+		fprintf(ASToutfile,"IdtypelistASTnode\n");
 		vector<class IdtypeASTnode*> var_list = node.getIdtypelist();
 		for(int i=var_list.size()-1; i>=0 ;i--)
 			var_list[i]->accept(*this);
 	}
 
 	virtual void visit(VardeclASTnode &node){
-		fprintf(stdout,"VardeclASTnode\n");
-		fprintf(stdout,"<datatype = %s\n",node.getdataType().c_str());
+		fprintf(ASToutfile,"VardeclASTnode\n");
+		fprintf(ASToutfile,"<datatype = %s\n",node.getdataType().c_str());
 		class IdlistASTnode * var_list = node.getIdlist();
 		var_list->accept(*this);
 	}
 
 	virtual void visit(VardecllistASTnode &node){
-		fprintf(stdout,"VardecllistASTnode\n");
+		fprintf(ASToutfile,"VardecllistASTnode\n");
 		vector<class VardeclASTnode *> var_decl_list = node.getVardeclList();
 		for(int i=0; i< sz(var_decl_list) ;i++)
 			var_decl_list[i]->accept(*this);
 	}
 
 	virtual void visit(MethoddeclASTnode &node){
-		fprintf(stdout,"MethoddeclASTnode\n");
-		fprintf(stdout,"<returntype = %s\n",node.getreturnType().c_str());
-		fprintf(stdout,"<methodname = %s\n", node.getId().c_str());
+		fprintf(ASToutfile,"MethoddeclASTnode\n");
+		fprintf(ASToutfile,"<returntype = %s\n",node.getreturnType().c_str());
+		fprintf(ASToutfile,"<methodname = %s\n", node.getId().c_str());
 		class IdtypelistASTnode * var_list = node.getIdlist();
 		var_list->accept(*this);
 		class BlockstatementASTnode * block = node.getBlock();
@@ -127,35 +131,34 @@ public:
 	}
 
 	virtual void visit(MethoddecllistASTnode &node){
-		fprintf(stdout,"MethoddecllistASTnode\n");
+		fprintf(ASToutfile,"MethoddecllistASTnode\n");
 		vector<class MethoddeclASTnode *> method_decl_list = node.getMethoddeclList();
 		for(int i=0; i< sz(method_decl_list) ;i++)
 			method_decl_list[i]->accept(*this);
 	}
 
 	virtual void visit(StatementASTnode &node){
-		fprintf(stdout,"StatementASTnode\n");
+		fprintf(ASToutfile,"StatementASTnode\n");
 	}
 
 	virtual void visit(StatementlistASTnode &node){
-		fprintf(stdout,"StatementlistASTnode\n");
+		fprintf(ASToutfile,"StatementlistASTnode\n");
 		vector<class StatementASTnode*> statements_list = node.getStatementsList();
 		for(int i=0; i< sz(statements_list) ;i++){
-			cout << i << " ";
 			statements_list[i]->accept(*this);
 		}
 	}
 
 	virtual void visit(BreakstatementASTnode &node){
-		fprintf(stdout,"BreakStatementASTnode\n");
+		fprintf(ASToutfile,"BreakStatementASTnode\n");
 	}
 
 	virtual void visit(ContinuestatementASTnode &node){
-		fprintf(stdout,"ContinuestatementASTnode\n");
+		fprintf(ASToutfile,"ContinuestatementASTnode\n");
 	}
 
 	virtual void visit(ReturnstatementASTnode &node){
-		fprintf(stdout,"ReturnstatementASTnode\n");
+		fprintf(ASToutfile,"ReturnstatementASTnode\n");
 		class ExprASTnode * expr = node.getExpr();
 		if(expr == NULL){
 
@@ -166,7 +169,7 @@ public:
 	}
 
 	virtual void visit(BlockstatementASTnode &node){
-		fprintf(stdout,"BlockstatementASTnode\n");
+		fprintf(ASToutfile,"BlockstatementASTnode\n");
 		class VardecllistASTnode * var_decl_list = node.getVardeclList();
 		class StatementlistASTnode * statements_list = node.getStatementsList();
 		var_decl_list->accept(*this);
@@ -174,37 +177,37 @@ public:
 	}
 
 	virtual void visit(ForstatementASTnode &node){
-		fprintf(stdout,"ForstatementASTnode\n");
-		fprintf(stdout,"<varname = %s\n",node.getId().c_str());
+		fprintf(ASToutfile,"ForstatementASTnode\n");
+		fprintf(ASToutfile,"<varname = %s\n",node.getId().c_str());
 		class ExprASTnode * initial_cond = node.getInitialcond();
-		fprintf(stdout,"Initial condn\n");
+		fprintf(ASToutfile,"Initial condn\n");
 		initial_cond->accept(*this);
 		class ExprASTnode * break_cond = node.getBreakcond();
-		fprintf(stdout,"Break condn\n");
+		fprintf(ASToutfile,"Break condn\n");
 		break_cond->accept(*this);
 		class BlockstatementASTnode * block = node.getBlockstatement();
-		fprintf(stdout,"Block statement\n");
+		fprintf(ASToutfile,"Block statement\n");
 		block->accept(*this);
 	}
 
 	virtual void visit(IfelseASTnode &node){
-		fprintf(stdout,"IfelseASTnode\n");
+		fprintf(ASToutfile,"IfelseASTnode\n");
 		class ExprASTnode * cond = node.getCond();
-		fprintf(stdout,"Condition\n");
+		fprintf(ASToutfile,"Condition\n");
 		cond->accept(*this);
 		class BlockstatementASTnode * ifstatement = node.getIfstatement();
-		fprintf(stdout,"If statement\n");
+		fprintf(ASToutfile,"If statement\n");
 		ifstatement->accept(*this);
 		class BlockstatementASTnode * elsestatement = node.getElsestatement();
 		if(elsestatement != NULL){
-			fprintf(stdout,"Else statement\n");
+			fprintf(ASToutfile,"Else statement\n");
 			elsestatement->accept(*this);
 		}
 	}
 
 	virtual void visit(LocationASTnode &node){
-		fprintf(stdout,"LocationASTnode\n");
-		fprintf(stdout,"<varname = %s\n",node.getId().c_str());
+		fprintf(ASToutfile,"LocationASTnode\n");
+		fprintf(ASToutfile,"<varname = %s\n",node.getId().c_str());
 		class ExprASTnode * expr = node.getExpr();
 		if(expr == NULL){
 
@@ -215,66 +218,65 @@ public:
 	}
 
 	virtual void visit(AssignstatementASTnode &node){
-		fprintf(stdout,"AssignstatementASTnode\n");
+		fprintf(ASToutfile,"AssignstatementASTnode\n");
 		class LocationASTnode * location = node.getLocation();
 		location->accept(*this);
-		fprintf(stdout,"<operator = %s\n",node.getOp().c_str());
+		fprintf(ASToutfile,"<operator = %s\n",node.getOp().c_str());
 		class ExprASTnode * expr = node.getExpr();
 		expr->accept(*this);
 	}
 
 
 	virtual void visit(MethodASTnode &node){
-		fprintf(stdout,"MethodASTnode\n");
+		fprintf(ASToutfile,"MethodASTnode\n");
 	}
 
 	virtual void visit(MethodArgsASTnode &node){
-		fprintf(stdout,"MethodArgsASTnode\n");
+		fprintf(ASToutfile,"MethodArgsASTnode\n");
 		vector<class ExprASTnode *> arguments_list = node.getArgumentsList();
 		for(int i=0; i< sz(arguments_list) ;i++)
 			arguments_list[i]->accept(*this);
 	}
 
 	virtual void visit(DefinedMethodASTnode &node){
-		fprintf(stdout,"DefinedMethodASTnode\n");
+		fprintf(ASToutfile,"DefinedMethodASTnode\n");
 		string method_name = node.getMethodName();
-		cout << "derived"<< endl;
 		class MethodArgsASTnode* arguments_list = node.getArgsList();
-		fprintf(stdout,"defined method name = %s\n",method_name.c_str());
+		fprintf(ASToutfile,"defined method name = %s\n",method_name.c_str());
 		arguments_list->accept(*this);
 	}
 
 	virtual void visit(CalloutargASTnode &node){
-		fprintf(stdout,"CalloutargASTnode\n");
+		fprintf(ASToutfile,"CalloutargASTnode\n");
 	}
 
 	virtual void visit(ExprargASTnode &node){
-		fprintf(stdout,"ExprargASTnode\n");
+		fprintf(ASToutfile,"ExprargASTnode\n");
 		class ExprASTnode * expr_argument = node.getArgument();
 		expr_argument->accept(*this);
 	}
 
 	virtual void visit(StringargASTnode &node){
-		fprintf(stdout,"StringargASTnode\n");
+		fprintf(ASToutfile,"StringargASTnode\n");
 		string argument =  node.getArgument();
-		fprintf(stdout,"<string arg = %s\n", argument.c_str());
+		fprintf(ASToutfile,"<string arg = %s\n", argument.c_str());
 	}
 	virtual void visit(CalloutArgsASTnode &node){
-		fprintf(stdout,"CalloutArgsASTnode\n");
+		fprintf(ASToutfile,"CalloutArgsASTnode\n");
 		vector<class CalloutargASTnode *> arguments_list = node.getArgumentsList();
 		for(int i=0; i< sz(arguments_list) ;i++)
 			arguments_list[i]->accept(*this);
 	}
 
 	virtual void visit(CalloutMethodASTnode &node){
-		fprintf(stdout,"CalloutMethodASTnode\n");
-		fprintf(stdout,"<call out methodname = %s\n",node.getMethodName().c_str());
+		fprintf(ASToutfile,"CalloutMethodASTnode\n");
+		fprintf(ASToutfile,"<call out methodname = %s\n",node.getMethodName().c_str());
 		class CalloutArgsASTnode* arguments_list = node.getArgsList();
 		arguments_list->accept(*this);
 	}
 
 	virtual void visit(ProgramASTnode& node){
-		fprintf(stdout,"ProgramASTnode\n");
+		fprintf(ASToutfile,"ProgramASTnode\n");
 		class FielddecllistASTnode* field_decl_list = node.getFielddeclList();
 		class MethoddecllistASTnode* method_decl_list = node.getMethoddeclList();
 		field_decl_list->accept(*this);
