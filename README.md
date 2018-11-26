@@ -171,4 +171,4 @@ br label %1
 ```
 
 ## Further Improvements
-I haven't implement codegen for continue, break and return statement. Also, I haven't taken care of scope of variables within methods.
+I haven't implement codegen for continue and break statement. Also, I haven't taken care of scope of variables within methods.
