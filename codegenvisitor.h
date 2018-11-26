@@ -331,8 +331,9 @@ class codegenvisitor : public CodeGenvisitor
 				Builder.CreateRet(NULL);
 			}
 		}
-		else
+		else{
 			Builder.CreateRet(NULL);
+		}
 		
 		// verifyFunction(*TheFunction);
     	return TheFunction;
@@ -369,7 +370,7 @@ class codegenvisitor : public CodeGenvisitor
  		// Function * Func = Module_Ob->getFunction(method_name);
  		class ExprASTnode * expr = node.getExpr();
  		if(expr == NULL){
- 			return NULL;
+ 			return Builder.getInt32(0);
  		}
 
  		else{
@@ -486,6 +487,7 @@ class codegenvisitor : public CodeGenvisitor
 		class BlockstatementASTnode * elsestatement = node.getElsestatement();
 
 		Function *TheFunction = Builder.GetInsertBlock()->getParent();
+    	Type *retType = Builder.GetInsertBlock()->getParent()->getReturnType();
 
 		// Create blocks for the then and else cases.  Insert the 'then' block at the
 		// end of the function.
@@ -497,7 +499,6 @@ class codegenvisitor : public CodeGenvisitor
 		// Emit then value.
   		Builder.SetInsertPoint(ThenBB);
 
-  		// cout << "IF" << endl << endl;
   		Value * ThenV = ifstatement->codegen(*this);
 
   		if (!ThenV){
@@ -505,28 +506,58 @@ class codegenvisitor : public CodeGenvisitor
     		return nullptr;
   		}
 
-    	Builder.CreateBr(MergeBB);
-  		// Codegen of 'Then' can change the current block, update ThenBB for the PHI.
-  		ThenBB = Builder.GetInsertBlock();
+		bool retvalif = ifstatement->hasreturn();
+  		if (!retvalif){
+  			// cout << "IF HAS NO RE" <<endl;
+    		Builder.CreateBr(MergeBB);
+  		}
+    	else{
+  			if (retType == Type::getInt32Ty(mycontext))
+			 	Builder.CreateRet(ThenV);
+			else if(retType == Type::getInt1Ty(mycontext))
+			 	Builder.CreateRet(ThenV);
+			else{
+				// cout << "IFRETURN" << endl;
+			 	Builder.CreateRetVoid();
+			}
+    	}
+
+    	ThenBB = Builder.GetInsertBlock();
+
+    	TheFunction->getBasicBlockList().push_back(ElseBB);
+		Builder.SetInsertPoint(ElseBB);
 
   		// Emit else block.
-  		TheFunction->getBasicBlockList().push_back(ElseBB);
-  		Builder.SetInsertPoint(ElseBB);
   		if(elsestatement != NULL){
+  			// cout << "LOOP IN ELSE";
+
 			Value * ElseV = elsestatement->codegen(*this);
-			if (!ElseV)
+			if (!ElseV){
+				cout << "Erro inElse";
     			return nullptr;
+			}
+			bool retvalelse = elsestatement->hasreturn();
+			// cout << retvalelse << endl;
+
+			if (retvalelse){
+  				if (retType == Type::getInt32Ty(mycontext))
+			 		Builder.CreateRet(ElseV);
+				else if(retType == Type::getInt1Ty(mycontext))
+			 		Builder.CreateRet(ElseV);
+				else
+			 		Builder.CreateRetVoid();
+    		}
 		}
+
+		Builder.CreateBr(MergeBB);
+		// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
+		ElseBB = Builder.GetInsertBlock();
   		// elsestatement->codegen(*this);
   		
-
-    	Builder.CreateBr(MergeBB);
-  		// Codegen of 'Else' can change the current block, update ElseBB for the PHI.
-  		ElseBB = Builder.GetInsertBlock();
-
   		// Emit merge block.
   		TheFunction->getBasicBlockList().push_back(MergeBB);
   		Builder.SetInsertPoint(MergeBB);
+
   		// PHINode *PN = Builder.CreatePHI(Type::getDoubleTy(mycontext), 2, "iftmp");
 
   		// PN->addIncoming(ThenV, ThenBB);

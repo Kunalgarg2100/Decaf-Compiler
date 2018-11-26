@@ -559,6 +559,10 @@ public:
 	virtual Value * codegen(CodeGenvisitor &v){
 		return v.Codegen(*this);
 	}
+
+	virtual bool hasreturn() { 
+		return false; 
+	}
 };
 
 class StatementlistASTnode : public ASTnode{
@@ -573,6 +577,15 @@ public:
 
 	vector<class StatementASTnode*> getStatementsList(){
 		return statements_list;
+	}
+
+	virtual bool hasreturn(){
+		for (uint i = 0; i < statements_list.size(); i++) {
+        if (statements_list[i]->hasreturn()) {
+            	return true;
+        	}
+    	}
+		return false;
 	}
 
 	virtual void accept(ASTvisitor &v){
@@ -621,6 +634,10 @@ public:
 		return expr;
 	}
 
+	virtual bool hasreturn(){
+		return true;
+	}
+
 	virtual void accept(ASTvisitor &v){
 		v.visit(*this);
 	}
@@ -644,6 +661,13 @@ public:
 
 	class StatementlistASTnode * getStatementsList(){
 		return statements_list;
+	}
+
+	virtual bool hasreturn(){
+        if (statements_list->hasreturn()) {
+            	return true;
+        }
+		return false;
 	}
 
 	virtual void accept(ASTvisitor &v){
@@ -709,6 +733,17 @@ public:
 
 	class ExprASTnode * getCond(){
 		return cond;
+	}
+
+	virtual bool hasreturn() { 
+		if(ifstatement->hasreturn()){
+			return true;
+		}
+		if(elsestatement != NULL){
+			if(elsestatement->hasreturn())
+				return true;
+		};
+		return false; 
 	}
 
 	virtual void accept(ASTvisitor &v){
