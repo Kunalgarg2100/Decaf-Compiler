@@ -51,6 +51,7 @@ string (\\.|[^"])*
 [&][&] { fprintf(outfile,"AND:%s\n",yytext); yylval.str = strdup(yytext); return AND; }
 [|][|] { fprintf(outfile,"OR:%s\n",yytext); yylval.str = strdup(yytext); return OR; }
 [ \t\n]+  { /* ignore whitespace */ }
+"//".*"\n" { /* inline comments */}
 [,] { fprintf(outfile,"COMMA:%s\n",yytext) ; return COMMA; }
 [;] { fprintf(outfile,"SEMICOLON:%s\n",yytext); return SEMICOLON; }
 .   { fprintf(outfile,"Mystery character %s\n", yytext); }
