@@ -140,7 +140,7 @@ class codegenvisitor : public CodeGenvisitor
  		else{
  			val = false;
  		}
- 		return ConstantInt::get(mycontext, APInt(32,val));
+ 		return ConstantInt::get(mycontext, APInt(1,val));
  	}
 
  	virtual Value * Codegen(CharLitExprASTnode& node){
@@ -307,9 +307,15 @@ class codegenvisitor : public CodeGenvisitor
   		for (auto &Arg : TheFunction->args()){
   			Arg.setName(argNames[Idx]);
   			AllocaInst * alloca = CreateEntryBlockAlloca(TheFunction, argNames[Idx], argTypes[Idx]);
+  			if(arryt[Idx] == "int"){
   			alloca->setAlignment(4);
+  			/* initializing variables to 0 */
   			Builder.CreateAlignedStore(&Arg, alloca, 4);
-  			// cout << Idx << argNames[Idx] << endl;
+  		}
+  		else{
+  			// Value * initval = ConstantInt::get(mycontext, APInt(1,0));
+  			Builder.CreateStore(&Arg, alloca);
+  		}
   			Named_Values[argNames[Idx]] = alloca;
   			Idx++;
   		}
