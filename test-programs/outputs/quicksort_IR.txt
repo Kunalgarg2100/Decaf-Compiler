@@ -1,0 +1,212 @@
+; ModuleID = 'Decaff'
+source_filename = "Decaff"
+
+@inp = common global [110 x i32] zeroinitializer
+@0 = private unnamed_addr constant [4 x i8] c"%d \00"
+@1 = private unnamed_addr constant [3 x i8] c"\5Cn\00"
+@2 = private unnamed_addr constant [4 x i8] c"%d \00"
+@3 = private unnamed_addr constant [3 x i8] c"\5Cn\00"
+
+define void @initialize(i32 %n) {
+entry:
+  %i5 = alloca i32
+  %i2 = alloca i32
+  %i = alloca i32, align 4
+  %n1 = alloca i32, align 4
+  store i32 %n, i32* %n1, align 4
+  store i32 0, i32* %i, align 4
+  %0 = load i32, i32* %n1
+  store i32 0, i32* %i2, align 4
+  br label %loop
+
+loop:                                             ; preds = %loop, %entry
+  %i3 = phi i32 [ 0, %entry ], [ %nextvar, %loop ]
+  %1 = load i32, i32* %i2
+  %inpINDEX = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %1
+  %2 = load i32, i32* %n1
+  %3 = load i32, i32* %i2
+  %subop = sub i32 %2, %3
+  store i32 %subop, i32* %inpINDEX, align 4
+  %i4 = load i32, i32* %i2, align 4
+  %nextvar = add i32 %i4, 1
+  store i32 %nextvar, i32* %i2, align 4
+  %loopcondition = icmp slt i32 %nextvar, %0
+  br i1 %loopcondition, label %loop, label %afterloop
+
+afterloop:                                        ; preds = %loop
+  %4 = load i32, i32* %n1
+  store i32 0, i32* %i5, align 4
+  br label %loop6
+
+loop6:                                            ; preds = %loop6, %afterloop
+  %i7 = phi i32 [ 0, %afterloop ], [ %nextvar10, %loop6 ]
+  %5 = load i32, i32* %i5
+  %inpINDEX8 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %5
+  %6 = load i32, i32* %inpINDEX8
+  %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @0, i32 0, i32 0), i32 %6)
+  %i9 = load i32, i32* %i5, align 4
+  %nextvar10 = add i32 %i9, 1
+  store i32 %nextvar10, i32* %i5, align 4
+  %loopcondition11 = icmp slt i32 %nextvar10, %4
+  br i1 %loopcondition11, label %loop6, label %afterloop12
+
+afterloop12:                                      ; preds = %loop6
+  %call13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @1, i32 0, i32 0))
+  ret void
+}
+
+declare i32 @printf(i8*, ...)
+
+define i32 @partition(i32 %s, i32 %e) {
+entry:
+  %j = alloca i32
+  %i = alloca i32, align 4
+  %tmp = alloca i32, align 4
+  %pivot = alloca i32, align 4
+  %e2 = alloca i32, align 4
+  %s1 = alloca i32, align 4
+  store i32 %s, i32* %s1, align 4
+  store i32 %e, i32* %e2, align 4
+  store i32 0, i32* %pivot, align 4
+  store i32 0, i32* %tmp, align 4
+  store i32 0, i32* %i, align 4
+  %0 = load i32, i32* %e2
+  %inpINDEX = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %0
+  %1 = load i32, i32* %inpINDEX
+  store i32 %1, i32* %pivot, align 4
+  %2 = load i32, i32* %s1
+  %subop = sub i32 %2, 1
+  store i32 %subop, i32* %i, align 4
+  %3 = load i32, i32* %s1
+  %4 = load i32, i32* %e2
+  store i32 %3, i32* %j, align 4
+  br label %loop
+
+loop:                                             ; preds = %ifcont, %entry
+  %j3 = phi i32 [ %3, %entry ], [ %nextvar, %ifcont ]
+  %5 = load i32, i32* %j
+  %inpINDEX4 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %5
+  %6 = load i32, i32* %inpINDEX4
+  %7 = load i32, i32* %pivot
+  %lteqop = icmp sle i32 %6, %7
+  br i1 %lteqop, label %then, label %else
+
+then:                                             ; preds = %loop
+  %8 = load i32, i32* %i
+  %addop = add i32 %8, 1
+  store i32 %addop, i32* %i, align 4
+  %9 = load i32, i32* %i
+  %inpINDEX5 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %9
+  %10 = load i32, i32* %inpINDEX5
+  store i32 %10, i32* %tmp, align 4
+  %11 = load i32, i32* %i
+  %inpINDEX6 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %11
+  %12 = load i32, i32* %j
+  %inpINDEX7 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %12
+  %13 = load i32, i32* %inpINDEX7
+  store i32 %13, i32* %inpINDEX6, align 4
+  %14 = load i32, i32* %j
+  %inpINDEX8 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %14
+  %15 = load i32, i32* %tmp
+  store i32 %15, i32* %inpINDEX8, align 4
+  br label %ifcont
+
+else:                                             ; preds = %loop
+  br label %ifcont
+
+ifcont:                                           ; preds = %else, %then
+  %j9 = load i32, i32* %j, align 4
+  %nextvar = add i32 %j9, 1
+  store i32 %nextvar, i32* %j, align 4
+  %loopcondition = icmp slt i32 %nextvar, %4
+  br i1 %loopcondition, label %loop, label %afterloop
+
+afterloop:                                        ; preds = %ifcont
+  %16 = load i32, i32* %i
+  %addop10 = add i32 %16, 1
+  %inpINDEX11 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %addop10
+  %17 = load i32, i32* %inpINDEX11
+  store i32 %17, i32* %tmp, align 4
+  %18 = load i32, i32* %i
+  %addop12 = add i32 %18, 1
+  %inpINDEX13 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %addop12
+  %19 = load i32, i32* %e2
+  %inpINDEX14 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %19
+  %20 = load i32, i32* %inpINDEX14
+  store i32 %20, i32* %inpINDEX13, align 4
+  %21 = load i32, i32* %e2
+  %inpINDEX15 = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %21
+  %22 = load i32, i32* %tmp
+  store i32 %22, i32* %inpINDEX15, align 4
+  %23 = load i32, i32* %i
+  %addop16 = add i32 %23, 1
+  ret i32 %addop16
+}
+
+define void @quicksort(i32 %s, i32 %e) {
+entry:
+  %p = alloca i32, align 4
+  %e2 = alloca i32, align 4
+  %s1 = alloca i32, align 4
+  store i32 %s, i32* %s1, align 4
+  store i32 %e, i32* %e2, align 4
+  %0 = load i32, i32* %s1
+  %1 = load i32, i32* %e2
+  %gteqop = icmp sge i32 %0, %1
+  br i1 %gteqop, label %then, label %else
+
+then:                                             ; preds = %entry
+  ret void
+
+else:                                             ; preds = %entry
+  store i32 0, i32* %p, align 4
+  %2 = load i32, i32* %s1
+  %3 = load i32, i32* %e2
+  %4 = call i32 @partition(i32 %2, i32 %3)
+  store i32 %4, i32* %p, align 4
+  %5 = load i32, i32* %s1
+  %6 = load i32, i32* %p
+  %subop = sub i32 %6, 1
+  call void @quicksort(i32 %5, i32 %subop)
+  %7 = load i32, i32* %p
+  %addop = add i32 %7, 1
+  %8 = load i32, i32* %e2
+  call void @quicksort(i32 %addop, i32 %8)
+  ret void
+  br label %ifcont
+
+ifcont:                                           ; preds = %else
+  ret void
+}
+
+define void @main() {
+entry:
+  %i = alloca i32
+  %n = alloca i32, align 4
+  store i32 0, i32* %n, align 4
+  store i32 90, i32* %n, align 4
+  %0 = load i32, i32* %n
+  call void @initialize(i32 %0)
+  %1 = load i32, i32* %n
+  %subop = sub i32 %1, 1
+  call void @quicksort(i32 0, i32 %subop)
+  %2 = load i32, i32* %n
+  store i32 0, i32* %i, align 4
+  br label %loop
+
+loop:                                             ; preds = %loop, %entry
+  %i1 = phi i32 [ 0, %entry ], [ %nextvar, %loop ]
+  %3 = load i32, i32* %i
+  %inpINDEX = getelementptr [110 x i32], [110 x i32]* @inp, i32 0, i32 %3
+  %4 = load i32, i32* %inpINDEX
+  %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @2, i32 0, i32 0), i32 %4)
+  %i2 = load i32, i32* %i, align 4
+  %nextvar = add i32 %i2, 1
+  store i32 %nextvar, i32* %i, align 4
+  %loopcondition = icmp slt i32 %nextvar, %2
+  br i1 %loopcondition, label %loop, label %afterloop
+
+afterloop:                                        ; preds = %loop
+  %call3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @3, i32 0, i32 0))
+  ret void
+}

@@ -1,0 +1,48 @@
+; ModuleID = 'Decaff'
+source_filename = "Decaff"
+
+@0 = private unnamed_addr constant [30 x i8] c"%dth fibonacci number is %d\5Cn\00"
+
+define i32 @fib(i32 %n) {
+entry:
+  %n1 = alloca i32, align 4
+  store i32 %n, i32* %n1, align 4
+  %0 = load i32, i32* %n1
+  %lteqop = icmp sle i32 %0, 1
+  br i1 %lteqop, label %then, label %else
+
+then:                                             ; preds = %entry
+  ret i32 1
+
+else:                                             ; preds = %entry
+  %1 = load i32, i32* %n1
+  %subop = sub i32 %1, 1
+  %2 = call i32 @fib(i32 %subop)
+  %3 = load i32, i32* %n1
+  %subop2 = sub i32 %3, 2
+  %4 = call i32 @fib(i32 %subop2)
+  %addop = add i32 %2, %4
+  ret i32 %addop
+  br label %ifcont
+
+ifcont:                                           ; preds = %else
+  ret i32 0
+}
+
+define void @main() {
+entry:
+  %result = alloca i32, align 4
+  %n = alloca i32, align 4
+  store i32 0, i32* %n, align 4
+  store i32 0, i32* %result, align 4
+  store i32 10, i32* %n, align 4
+  %0 = load i32, i32* %n
+  %1 = call i32 @fib(i32 %0)
+  store i32 %1, i32* %result, align 4
+  %2 = load i32, i32* %n
+  %3 = load i32, i32* %result
+  %call = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([30 x i8], [30 x i8]* @0, i32 0, i32 0), i32 %2, i32 %3)
+  ret void
+}
+
+declare i32 @printf(i8*, ...)

@@ -7,8 +7,7 @@
 - [visitor.h](./visitor.h) contains code for AST traversal
 - [codegenvistor.h](./codegenvistor.h) contains code for generating IR
 - [test-programs](./test-programs) contains some sample Decaf Programs
-  - [working-programs](./test-programs/working-programs) contains Decaf Programs for whose AST construction and IR generation are successfully done by code. 
-  - [non-working-programs](./test-programs/non-working-programs)  contains Decaf Programs for whose AST construction is done but IR generation is giving errors. 
+  - [outputs](./test-programs/outputs) contains IR of sample Decaf Program
   - [c-programs](./test-programs/c-programs)  contains C- Programs equivalent to Deacf Program which were used to understand IR generation. 
 - [Makefile](./Makefile) for compiling scanner and parser
 
@@ -48,18 +47,18 @@ clang-6.0 -cc1 -emit-llvm <filename>.c -o <filename>.ll
 # This will give the tokenized output for nextmax.dcf
 ./parser < test-programs/working-programs/nextmax.dcf
 ```
- 
+
 
 ## Description
 
 ### Things implemented
 -	Nest If-Else statements
--	Local Methods
--	Multiple Function Calls
--	Callout function for Array
--	Nested For loops
--	Binary Exprs and Assignment Statement
--	Little Support for Recursive Functions
+		Local Methods
+		Multiple Function Calls
+		Callout function for Array
+		Nested For loops
+		Binary Exprs and Assignment Statement
+		Little Support for Recursive Functions
 
 **Scanner :** The scanner’s task is to transform a stream of characters into a stream of words in the input language. It applies a set of rules to determine whether or not each word is legal in the source language. If the word is valid, the scanner classifies it into a syntactic category, or “part of speech.”.<br/> Thus the scanner takes a stream of characters and converts it to a stream of classified words—that is, **pairs of the form (p,s), where p is the word’s part of speech and s is its spelling**.
 <br/>Example : ("FOR",*for*), ("INTEGER_LITERAL",*123*), ("STRING",*"hello"*)<br/><br/>

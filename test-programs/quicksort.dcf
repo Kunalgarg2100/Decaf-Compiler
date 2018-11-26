@@ -1,0 +1,61 @@
+class Program {
+
+	int inp[110];
+
+	void initialize(int n){
+		int i;
+		for i=0, n {
+			inp[i] = n - i;
+		}
+		for i=0, n {
+			callout("printf","%d ",inp[i]);
+		}
+		callout("printf","\n");
+	}
+
+	int partition(int s, int e){
+		int pivot, tmp;
+		int i;
+		
+		pivot = inp[e];
+		i = s - 1;
+
+		for j = s, e{
+			if(inp[j] <= pivot){
+				i = i + 1;
+				tmp = inp[i];
+				inp[i] = inp[j];
+				inp[j] = tmp;
+			}
+		}
+
+		tmp = inp[i + 1];
+		inp[i + 1] = inp[e];
+		inp[e] = tmp;
+		return i + 1;
+	}
+
+	void quicksort(int s, int e) {	
+		if(s >= e) {
+			return;
+		}
+		else {
+			int p;
+			p = partition(s,e);
+			quicksort(s, p-1);
+			quicksort(p+1,e);
+			return;
+		}
+	}
+
+	void main() {
+		int n;
+		n = 90;
+		initialize(n);
+		quicksort(0,n-1);
+		for i=0, n{
+			callout("printf","%d ",inp[i]);
+		}
+		callout("printf","\n");
+	}
+}

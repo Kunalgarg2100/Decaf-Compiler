@@ -1,0 +1,15 @@
+class Program{
+	
+	int gcd(int a, int b) {
+		if (b == 0){ 
+			return a;
+		}
+		return gcd(b, a % b);
+	}
+	
+	void main(){
+		int a;
+		a = gcd(30,16);
+		callout("printf","gcd is %d\n",a);
+	}
+}
