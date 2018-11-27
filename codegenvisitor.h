@@ -24,7 +24,7 @@
 #define sz(a) (int)a.size()
 using namespace std;
 static LLVMContext mycontext;
-static Module *Module_Ob = new Module("Decaff", mycontext);;
+static Module *Module_Ob = new Module("Decaff", mycontext);
 static IRBuilder<> Builder(mycontext);
 static std::map<std::string, llvm::AllocaInst *> Named_Values;
 

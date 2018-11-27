@@ -34,7 +34,10 @@ lli IR_output.txt
 
 To convert the C program to its IR, command is
 ```bash
+# depending on the executable command for clang
 clang-6.0 -cc1 -emit-llvm <filename>.c -o <filename>.ll
+# or
+clang -cc1 -emit-llvm <filename>.c -o <filename>.ll
 ```
 
 ### Examples to run test-programs

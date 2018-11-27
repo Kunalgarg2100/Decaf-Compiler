@@ -1,4 +1,4 @@
-CC=clang++-6.0
+CC=g++
 CFLAGS=-Wall `llvm-config-6.0 --cxxflags --ldflags --system-libs --libs core`
 
 parser: parser.y scanner.l
